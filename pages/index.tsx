@@ -1,5 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import Nav from '../components/nav'
 import { Row, Col, Container, Jumbotron, Button } from 'react-bootstrap';
 
@@ -17,9 +18,11 @@ const Home = () => (
         </h1>
     </Jumbotron>
     <h2>Buttons</h2>
-    <Button variant="primary" className="mr-1">
-      Primary
-    </Button>
+    <Link href="/next">
+      <Button >
+        next
+      </Button>
+    </Link>
     <h2>Toasts</h2>
   </Container>
 )
