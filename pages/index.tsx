@@ -1,32 +1,42 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Nav from '../components/nav'
-import { Row, Col, Grid, Button, Layout } from 'antd';
-const { Header, Footer, Sider, Content } = Layout;
-//import 'bootstrap/dist/css/bootstrap.min.css';
-import 'antd/dist/antd.css'
+import { Grid, Input, Button } from 'semantic-ui-react';
+import _ from 'lodash'
+
+import 'semantic-ui-css/semantic.min.css'
+import { IndexStore, StoreItem } from '../store/store';
+
+interface State {
+  items: StoreItem[]
+}
+
+const store = new IndexStore();
 
 
 
-const Home = () => (
-  <>
-    <Layout>
-      <Header>Header</Header>
-      <Sider>
-        Sider
-        </Sider>
-      <Content>
-        12314
-          <Link href="/next">
-          <Button >
-            next
-          </Button>
-        </Link>
-      </Content>
-      <Footer>Footer</Footer>
-    </Layout>
-  </>
-)
+async function search(key: string, setFun: (items: StoreItem[]) => void) {
+  //const items = await store.Search(key);
+  setFun([]);
+}
+
+const Home = () => {
+  const [items, setItems] = useState<StoreItem[]>([]);
+  return (
+    <>
+      <Input action='Search' placeholder='Search...' onChange={(data) => search(data.target.value, setItems)} />
+      <Grid>
+        {
+          _.forEach(items, (item) => (
+            <Grid.Column key={item.id}>
+              {item.name_cn}
+            </Grid.Column>
+          ))
+        }
+      </Grid>
+    </>
+  )
+}
 
 export default Home

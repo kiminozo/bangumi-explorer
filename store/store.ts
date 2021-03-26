@@ -4,7 +4,7 @@ import Path from "path";
 import FlexSearch from "flexsearch";
 import jieba from 'nodejieba';
 
-interface StoreItem extends Item {
+export interface StoreItem extends Item {
     path?: string;
     disk?: string;
     symbol?: string;
@@ -88,5 +88,25 @@ async function test() {
 
 }
 
+export class IndexStore {
+    init = false;
 
-test();
+    constructor() {
+
+    }
+
+    async Search(key: string): Promise<StoreItem[]> {
+        if (!this.init) {
+            this.init = true;
+            const data = await fs.promises.readFile(dbFile, 'utf-8')
+            index.import(data);
+        }
+        // const res = await index.search(key, {
+        //     field: ["name_cn"],
+        // });
+        const res = index.where(item => item.name === key);
+        return res;
+    }
+}
+
+//test();
