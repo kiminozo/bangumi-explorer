@@ -68,19 +68,25 @@ async function read(path: string, deep: number) {
     // console.log(index.search("GRANBELM"));
 }
 
-async function test() {
-    // const item = await readData(Path.join('.data', '新番', '2019-01', '在世界尽头咏唱恋曲的少女YU-NO'));
-    // const items: StoreItem[] = [];
+const dbFile = Path.join("output", "index.db");
 
-    // if (item) {
-    //     console.log(decodeURI(item.name_cn))
-    //     index.add(item);
-    // }
+async function writeFile() {
     await read(Path.join('.data', '新番'), 1);
+    const data = index.export();
+    await fs.promises.writeFile(dbFile, data, 'utf-8');
+
+}
+
+async function test() {
+    const data = await fs.promises.readFile(dbFile, 'utf-8')
+    index.import(data);
+
     const res = await index.search("在", {
         field: ["name_cn"],
     });
     console.log(res.map(p => p.name_cn));
+
 }
+
 
 test();
