@@ -2,13 +2,13 @@ import { Item } from "./bangumi";
 import fs from "fs";
 import Path from "path";
 import FlexSearch from "flexsearch";
+import jieba from 'nodejieba';
 
 interface StoreItem extends Item {
     path?: string;
     disk?: string;
     symbol?: string;
 }
-
 
 
 async function scan(path: string, deep: number): Promise<string[]> {
@@ -42,39 +42,45 @@ async function readData(path: string): Promise<StoreItem | null> {
 
 }
 
-// async function read(path: string, deep: number) {
-//     const dirs = await scan(path, deep);
-//     console.log(dirs);
-//     const resList = await Promise.all(dirs.map(dir => readData(dir)))
-//     const res = resList.filter(p => p != null).map(p => p!);
-//     res.forEach(item => {
-//         index.addDoc(item);
-//         console.log(decodeURI(item.name_cn))
-//     });
-//     console.log(index.search("GRANBELM"));
-// }
 
-//read(Path.join(, 1);
 const index = FlexSearch.create<StoreItem>({
     doc: {
         id: "id",
-        field: ["name", "name_cn"]
+        field: ["name", "name_cn", "summary"]
     },
     tokenize: (words) => {
-        return [];
+        const res = jieba.cutForSearch(words);
+        // console.log(res);
+        return res;
     }
 });
 
-async function test() {
-    const item = await readData(Path.join('.data', '新番', '2019-01', '在世界尽头咏唱恋曲的少女YU-NO'));
-    const items: StoreItem[] = [];
 
-    if (item) {
-        console.log(decodeURI(item.name_cn))
+async function read(path: string, deep: number) {
+    const dirs = await scan(path, deep);
+    // console.log(dirs);
+    const resList = await Promise.all(dirs.map(dir => readData(dir)))
+    const res = resList.filter(p => p != null).map(p => p!);
+    res.forEach(item => {
         index.add(item);
-    }
-    const res = await index.search("在")
-    console.log(res);
+        // console.log(decodeURI(item.name_cn))
+    });
+    // console.log(index.search("GRANBELM"));
+}
+
+async function test() {
+    // const item = await readData(Path.join('.data', '新番', '2019-01', '在世界尽头咏唱恋曲的少女YU-NO'));
+    // const items: StoreItem[] = [];
+
+    // if (item) {
+    //     console.log(decodeURI(item.name_cn))
+    //     index.add(item);
+    // }
+    await read(Path.join('.data', '新番'), 1);
+    const res = await index.search("在", {
+        field: ["name_cn"],
+    });
+    console.log(res.map(p => p.name_cn));
 }
 
 test();
