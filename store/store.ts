@@ -2,7 +2,11 @@ import { Item } from "./bangumi";
 import fs from "fs";
 import Path from "path";
 import FlexSearch from "flexsearch";
-import jieba from 'nodejieba';
+//import jieba from 'nodejieba';
+import Segment from 'segment';
+
+var segment = new Segment();
+segment.useDefault();
 
 export interface StoreItem extends Item {
     path?: string;
@@ -49,7 +53,7 @@ const index = FlexSearch.create<StoreItem>({
         field: ["name", "name_cn", "summary"]
     },
     tokenize: (words) => {
-        const res = jieba.cutForSearch(words);
+        const res = segment.cutForSearch(words);
         // console.log(res);
         return res;
     }
@@ -110,3 +114,4 @@ export class IndexStore {
 }
 
 //test();
+console.log(segment.doSegment('这是一个基于Node.js的中文分词模块。'));
