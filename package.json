@@ -9,9 +9,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "sev": "./node_modules/.bin/ts-node -- ./service/service.ts",
     "test:store": "./node_modules/.bin/ts-node -- ./store/store.ts"
   },
   "dependencies": {
+    "@types/express": "^4.17.11",
+    "express": "^4.17.1",
     "flexsearch": "^0.6.32",
     "lodash": "^4.17.21",
     "next": "^10.0.9",
