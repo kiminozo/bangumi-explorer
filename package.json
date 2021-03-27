@@ -6,10 +6,10 @@
   "author": "kiminozo <kiminozoeien@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./service/service.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "sev": "./node_modules/.bin/ts-node -- ./service/service.ts",
     "test:store": "./node_modules/.bin/ts-node -- ./store/store.ts"
   },
   "dependencies": {
