@@ -105,10 +105,10 @@ export class IndexStore {
             const data = await fs.promises.readFile(dbFile, 'utf-8')
             index.import(data);
         }
-        // const res = await index.search(key, {
-        //     field: ["name_cn"],
-        // });
-        const res = index.where(item => item.name === key);
+        const res = await index.search(key, {
+            field: ["name_cn"],
+        });
+        // const res = index.where(item => item.name === key);
         return res;
     }
 }
