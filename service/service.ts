@@ -19,7 +19,7 @@ async function run() {
             return;
         }
         const items = await index.Search(req.params.key);
-        console.log("Search:" + req.params.key);
+        //console.log("Search:" + req.params.key);
         res.send({ items: items });
     })
     server.get('*', (req, res) => {
