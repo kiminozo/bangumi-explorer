@@ -12,9 +12,16 @@ interface State {
   items: StoreItem[]
 }
 
-const store = new IndexStore();
+//const store = new IndexStore();
 
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const res = await fetch(`https://.../data`)
+  const data = await res.json()
 
+  // Pass data to the page via props
+  return { props: { data } }
+}
 
 async function search(key: string, setFun: (items: StoreItem[]) => void) {
   //const items = await store.Search(key);

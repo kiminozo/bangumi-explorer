@@ -3,9 +3,9 @@ import fs from "fs";
 import Path from "path";
 import FlexSearch from "flexsearch";
 //import jieba from 'nodejieba';
-import Segment from 'segment';
+import { Segment } from 'segment';
 
-var segment = new Segment();
+const segment = new Segment();
 segment.useDefault();
 
 export interface StoreItem extends Item {
@@ -53,7 +53,7 @@ const index = FlexSearch.create<StoreItem>({
         field: ["name", "name_cn", "summary"]
     },
     tokenize: (words) => {
-        const res = segment.cutForSearch(words);
+        const res = segment.doSegment(words).map(r => r.w);
         // console.log(res);
         return res;
     }
@@ -75,7 +75,7 @@ async function read(path: string, deep: number) {
 const dbFile = Path.join("output", "index.db");
 
 async function writeFile() {
-    await read(Path.join('.data', '新番'), 1);
+    await read(Path.join('/Volumes/anime', '新番'), 1);
     const data = index.export();
     await fs.promises.writeFile(dbFile, data, 'utf-8');
 
@@ -113,5 +113,6 @@ export class IndexStore {
     }
 }
 
+//writeFile();
+
 //test();
-console.log(segment.doSegment('这是一个基于Node.js的中文分词模块。'));
