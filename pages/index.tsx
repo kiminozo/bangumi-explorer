@@ -12,7 +12,7 @@ interface Result {
 }
 
 //const store = new IndexStore();
-const url = "http://localhost:3000/anime/";
+const url = "/anime/";
 
 // export async function getServerSideProps() {
 //   // Fetch data from external API
