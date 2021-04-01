@@ -11,4 +11,4 @@ services:
     volumes:
       - type: bind
         source: ./output
-        target: /home/node/app/database
+        target: /app/database
