@@ -47,7 +47,8 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
     {
       items.map(item => (
         <Item>
-          <Item.Image size='tiny' src={item.images.medium} />
+          {/* <Item.Image size='tiny' src={item.images.medium} /> */}
+          <Item.Image size='tiny' src={`/images/${item.id}`} />
           <Item.Content>
             <Item.Header>{item.name_cn}</Item.Header>
             <Item.Meta>

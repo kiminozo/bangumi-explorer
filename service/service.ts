@@ -23,10 +23,17 @@ async function run() {
             const items = await index.Search(req.params.key);
             //console.log("Search:" + req.params.key);
             res.send({ items: items });
+        });
+        server.get('/images/:id', async (req, res) => {
+            const id = req.params.id;
+            if (!id) {
+                res.sendFile(index.getImagePath(id));
+                return;
+            }
         })
         server.get('*', (req, res) => {
             return handle(req, res)
-        })
+        });
         server.listen(port, () => {
             console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
         });
