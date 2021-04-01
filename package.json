@@ -6,10 +6,11 @@
   "author": "kiminozo <kiminozoeien@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "./node_modules/.bin/ts-node -- ./service/service.ts",
-    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./service/service.ts",
-    "dev": "next dev",
-    "build": "next build",
+    "start": "NODE_ENV=production node dist/service.js",
+    "build:server": "tsc --project tsconfig.server.json",
+    "build:next": "next build",
+    "build": "yarn build:next && yarn build:server",
+    "dev": "nodemon --exec ./node_modules/.bin/ts-node -- ./service/service.ts",
     "test:store": "./node_modules/.bin/ts-node -- ./store/store.ts"
   },
   "dependencies": {
