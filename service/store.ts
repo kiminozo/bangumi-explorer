@@ -6,7 +6,8 @@ import FlexSearch from "flexsearch";
 import { Segment } from 'segment';
 
 const dataFileName = "data.json";
-const dbFile = Path.join("output", "index.db");
+const dev = process.env.NODE_ENV !== 'production'
+const dbFile = Path.join(dev ? "output" : "database", "index.db");
 
 const segment = new Segment();
 segment.useDefault();
