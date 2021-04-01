@@ -5,8 +5,25 @@ import FlexSearch from "flexsearch";
 //import jieba from 'nodejieba';
 import { Segment } from 'segment';
 
+const dataFileName = "data.json";
+const dbFile = Path.join("output", "index.db");
+
 const segment = new Segment();
 segment.useDefault();
+
+const index = FlexSearch.create<StoreItem>({
+    profile: "memory",
+    cache: true,
+    doc: {
+        id: "id",
+        field: ["name", "name_cn", "summary"]
+    },
+    tokenize: (words) => {
+        const res = segment.doSegment(words).map(r => r.w);
+        // console.log(res);
+        return res;
+    },
+});
 
 export interface StoreItem extends Item {
     path?: string;
@@ -31,7 +48,6 @@ async function scan(path: string, deep: number): Promise<string[]> {
     }
     return stack;
 }
-const dataFileName = "data.json";
 
 async function readData(path: string): Promise<StoreItem | null> {
     try {
@@ -47,17 +63,7 @@ async function readData(path: string): Promise<StoreItem | null> {
 }
 
 
-const index = FlexSearch.create<StoreItem>({
-    doc: {
-        id: "id",
-        field: ["name", "name_cn", "summary"]
-    },
-    tokenize: (words) => {
-        const res = segment.doSegment(words).map(r => r.w);
-        // console.log(res);
-        return res;
-    }
-});
+
 
 
 async function read(path: string, deep: number) {
@@ -72,13 +78,11 @@ async function read(path: string, deep: number) {
     // console.log(index.search("GRANBELM"));
 }
 
-const dbFile = Path.join("output", "index.db");
 
 async function writeFile() {
     await read(Path.join('/Volumes/anime', '新番'), 1);
     const data = index.export();
     await fs.promises.writeFile(dbFile, data, 'utf-8');
-
 }
 
 async function test() {
@@ -108,7 +112,6 @@ export class IndexStore {
         const res = await index.search(key, {
             field: ["name_cn"],
         });
-        // const res = index.where(item => item.name === key);
         return res;
     }
 }

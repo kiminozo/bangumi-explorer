@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import Nav from '../components/nav'
 import { Grid, Input, Item, Container, Icon } from 'semantic-ui-react';
 import _ from 'lodash'
 
 import 'semantic-ui-css/semantic.min.css'
-import { StoreItem } from '../store/store';
+import { StoreItem } from '../service/store';
 
 interface Result {
   items: StoreItem[]

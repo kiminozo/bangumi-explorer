@@ -1,6 +1,6 @@
 import express from "express";
 import next from 'next'
-import { IndexStore } from "../store/store";
+import { IndexStore } from "./store";
 
 //const app = express();
 const dev = process.env.NODE_ENV !== 'production'
