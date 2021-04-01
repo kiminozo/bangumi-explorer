@@ -27,7 +27,9 @@ async function run() {
         server.get('*', (req, res) => {
             return handle(req, res)
         })
-        server.listen(port);
+        server.listen(port, () => {
+            console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
+        });
     } catch (e) {
         console.error(e);
         process.exit(1);
