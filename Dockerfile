@@ -1,5 +1,5 @@
 # 编译用依赖库
-FROM node:12.18.0 AS deps
+FROM node:alpine AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 #RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -7,13 +7,13 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 # 部署用依赖库 
-FROM node:12.18.0  AS prod
+FROM node:alpine  AS prod
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --production
 
 # 编译 
-FROM node:12.18.0  AS builder
+FROM node:alpine  AS builder
 WORKDIR /app
 COPY . .
 COPY package.json yarn.lock ./
@@ -21,7 +21,7 @@ COPY --from=deps /app/node_modules ./node_modules
 RUN yarn build
 
 # 打包镜像
-FROM node:12.18.0  AS runner
+FROM node:alpine  AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
