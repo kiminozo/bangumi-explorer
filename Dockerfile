@@ -6,4 +6,5 @@ USER node
 #RUN yarn install --production
 COPY --chown=node:node . .
 EXPOSE 3000
+VOLUME [ "/home/node/app/database" ]
 CMD [ "yarn", "start" ]
