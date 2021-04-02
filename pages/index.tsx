@@ -11,35 +11,19 @@ interface Result {
   items: StoreItem[]
 }
 
-//const store = new IndexStore();
-const url = "/anime/";
-
-// export async function getServerSideProps() {
-//   // Fetch data from external API
-//   const res = await fetch(`https://.../data`)
-//   const data = await res.json()
-
-//   // Pass data to the page via props
-//   return { props: { data } }
-// }
-
-async function search(key: string, setFun: (items: StoreItem[]) => void) {
-  //const items = await store.Search(key);
+async function search(key: string, updateItem: (items: StoreItem[]) => void) {
   if (!key || key === '') {
-    setFun([]);
+    updateItem([]);
     return;
   }
-  const response = await fetch(url + key);
+  const response = await fetch("/anime/" + key);
   const data: Result = await response.json();
-  //console.log("res:" + JSON.stringify(data));
   const items = data.items;
   if (items) {
-    setFun(items);
+    updateItem(items);
   }
 }
-async function test(count: number, setFun: (items: number) => void) {
-  setFun(count + 1);
-}
+
 
 const ItemsGroup = (props: { items: StoreItem[] }) => {
   const { items } = props;
@@ -47,7 +31,8 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
     {
       items.map(item => (
         <Item>
-          <Item.Image size='tiny' src={item.images.medium} />
+          {/* <Item.Image size='tiny' src={item.images.medium} /> */}
+          <Item.Image size='tiny' src={`/images/${item.id}`} />
           <Item.Content>
             <Item.Header>{item.name_cn}</Item.Header>
             <Item.Meta>
@@ -66,22 +51,43 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
   </Item.Group>)
 }
 
+// const searchHandle = async (query: string) => {
+//   const [items, setItems] = useState<StoreItem[]>([]);
+//   if (!query || query === '') {
+//     setItems([]);
+//     return;
+//   }
+//   const response = await fetch("/anime/" + key);
+//   const data: Result = await response.json();
+//   const newItems = data.items;
+//   if (newItems) {
+//     setItems(newItems);
+//   }
+//   return items;
+// }
+
+
 const Home = () => {
   const [items, setItems] = useState<StoreItem[]>([]);
-  const [count, setCount] = useState(0);
+  //const [loading, setLoading] = useState<boolean>(false);
   return (
-    <Container>
-      <Grid>
-        <Grid.Row>
-          <Input action='Search' placeholder='Search...'
-            onChange={(data) => search(data.target.value, setItems)} />
-          <br />
-        </Grid.Row>
-        <Grid.Row>
-          <ItemsGroup items={items} />
-        </Grid.Row>
-      </Grid >
-    </Container>
+    <>
+      <Head>
+        <title>title</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <Container>
+        <Grid>
+          <Grid.Row centered>
+            <Input icon='search' placeholder='Search...'
+              onChange={(data) => search(data.target.value, setItems)} />
+          </Grid.Row>
+          <Grid.Row>
+            <ItemsGroup items={items} />
+          </Grid.Row>
+        </Grid >
+      </Container>
+    </>
   )
 }
 

@@ -2,7 +2,6 @@ import express from "express";
 import next from 'next'
 import { IndexStore } from "./store";
 
-//const app = express();
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler();
@@ -10,10 +9,10 @@ const index = new IndexStore();
 const port = process.env.PORT || 3000;
 
 const server = express();
-
 async function run() {
     try {
         await app.prepare();
+
         server.get('/anime/:key', async (req, res) => {
             const key = req.params.key;
             if (!key) {
@@ -23,10 +22,18 @@ async function run() {
             const items = await index.Search(req.params.key);
             //console.log("Search:" + req.params.key);
             res.send({ items: items });
+        });
+        server.get('/images/:id', async (req, res) => {
+            const id = req.params.id;
+            if (!id) {
+                res.status(404);
+                return;
+            }
+            res.sendFile(index.getImagePath(id));
         })
         server.get('*', (req, res) => {
             return handle(req, res)
-        })
+        });
         server.listen(port, () => {
             console.log(`> Ready on localhost:${port} - env ${process.env.NODE_ENV}`);
         });

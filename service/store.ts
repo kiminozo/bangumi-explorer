@@ -7,7 +7,8 @@ import { Segment } from 'segment';
 
 const dataFileName = "data.json";
 const dev = process.env.NODE_ENV !== 'production'
-const dbFile = Path.join(dev ? "output" : "database", "index.db");
+const dbPath = dev ? "output" : "database";
+const dbFile = Path.join(dbPath, "index.db");
 
 const segment = new Segment();
 segment.useDefault();
@@ -55,6 +56,8 @@ async function readData(path: string): Promise<StoreItem | null> {
         const data = await fs.promises.readFile(Path.join(path, dataFileName), 'utf-8');
         const item: StoreItem = JSON.parse(data);
         item.path = path;
+
+        await fs.promises.copyFile(Path.join(path, 'Poster.jpg'), Path.join(dbPath, "images", item.id + ".jpg"))
         return item;
     } catch (error) {
         console.error(error);
@@ -81,9 +84,10 @@ async function read(path: string, deep: number) {
 
 
 async function writeFile() {
-    await read(Path.join('/Volumes/anime', '新番'), 1);
+    //await read(Path.join('/Volumes/anime', '新番'), 1);
+    await read(Path.join('.data', '新番'), 1);
     const data = index.export();
-    await fs.promises.writeFile(dbFile, data, 'utf-8');
+    // await fs.promises.writeFile(dbFile, data, 'utf-8');
 }
 
 async function test() {
@@ -114,6 +118,10 @@ export class IndexStore {
             field: ["name_cn"],
         });
         return res;
+    }
+
+    getImagePath(id: string): string {
+        return Path.resolve(dbPath, "images", id + ".jpg")
     }
 }
 
