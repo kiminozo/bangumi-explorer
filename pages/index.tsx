@@ -11,16 +11,16 @@ interface Result {
   items: StoreItem[]
 }
 
-async function search(key: string, setFun: (items: StoreItem[]) => void) {
+async function search(key: string, updateItem: (items: StoreItem[]) => void) {
   if (!key || key === '') {
-    setFun([]);
+    updateItem([]);
     return;
   }
   const response = await fetch("/anime/" + key);
   const data: Result = await response.json();
   const items = data.items;
   if (items) {
-    setFun(items);
+    updateItem(items);
   }
 }
 
@@ -51,21 +51,43 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
   </Item.Group>)
 }
 
+// const searchHandle = async (query: string) => {
+//   const [items, setItems] = useState<StoreItem[]>([]);
+//   if (!query || query === '') {
+//     setItems([]);
+//     return;
+//   }
+//   const response = await fetch("/anime/" + key);
+//   const data: Result = await response.json();
+//   const newItems = data.items;
+//   if (newItems) {
+//     setItems(newItems);
+//   }
+//   return items;
+// }
+
+
 const Home = () => {
   const [items, setItems] = useState<StoreItem[]>([]);
+  //const [loading, setLoading] = useState<boolean>(false);
   return (
-    <Container>
-      <Grid>
-        <Grid.Row>
-          <Input action='Search' placeholder='Search...'
-            onChange={(data) => search(data.target.value, setItems)} />
-          <br />
-        </Grid.Row>
-        <Grid.Row>
-          <ItemsGroup items={items} />
-        </Grid.Row>
-      </Grid >
-    </Container>
+    <>
+      <Head>
+        <title>title</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <Container>
+        <Grid>
+          <Grid.Row centered>
+            <Input icon='search' placeholder='Search...'
+              onChange={(data) => search(data.target.value, setItems)} />
+          </Grid.Row>
+          <Grid.Row>
+            <ItemsGroup items={items} />
+          </Grid.Row>
+        </Grid >
+      </Container>
+    </>
   )
 }
 
