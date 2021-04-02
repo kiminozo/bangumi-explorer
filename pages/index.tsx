@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { Grid, Input, Item, Container, Icon } from 'semantic-ui-react';
-import _ from 'lodash'
+import { Grid, Input, Item, Container, Icon, Card, Image, Segment, Label, Header, Rating } from 'semantic-ui-react';
 
 import 'semantic-ui-css/semantic.min.css'
 import { StoreItem } from '../service/store';
@@ -27,28 +26,24 @@ async function search(key: string, updateItem: (items: StoreItem[]) => void) {
 
 const ItemsGroup = (props: { items: StoreItem[] }) => {
   const { items } = props;
-  return (<Item.Group divided>
+  return (<Grid relaxed columns={6}>
     {
       items.map(item => (
-        <Item>
-          {/* <Item.Image size='tiny' src={item.images.medium} /> */}
-          <Item.Image size='tiny' src={`/images/${item.id}`} />
-          <Item.Content>
-            <Item.Header>{item.name_cn}</Item.Header>
-            <Item.Meta>
-              <span >{item.name}</span>
-              <span >{item.air_date}</span>
-            </Item.Meta>
-            <Item.Description>{item.summary}</Item.Description>
-            <Item.Extra>
-              <Icon name='file' /> {item.path}
-            </Item.Extra>
-          </Item.Content>
-
-        </Item>
+        <Grid.Column>
+          <>
+            <Image wrapped rounded src={`/images/${item.id}`} size='small'
+              label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
+            />
+            <Header as="div" size="small"
+              content={item.name_cn ?? item.name}
+              subheader={item.air_date}
+            />
+            <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} />
+          </>
+        </Grid.Column>
       ))
     }
-  </Item.Group>)
+  </Grid>)
 }
 
 // const searchHandle = async (query: string) => {
@@ -79,8 +74,10 @@ const Home = () => {
       <Container>
         <Grid>
           <Grid.Row centered>
-            <Input icon='search' placeholder='Search...'
-              onChange={(data) => search(data.target.value, setItems)} />
+            <Grid.Column width={10} >
+              <Input fluid icon='search' placeholder='Search...'
+                onChange={(data) => search(data.target.value, setItems)} />
+            </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <ItemsGroup items={items} />
