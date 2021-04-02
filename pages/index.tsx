@@ -11,35 +11,19 @@ interface Result {
   items: StoreItem[]
 }
 
-//const store = new IndexStore();
-const url = "/anime/";
-
-// export async function getServerSideProps() {
-//   // Fetch data from external API
-//   const res = await fetch(`https://.../data`)
-//   const data = await res.json()
-
-//   // Pass data to the page via props
-//   return { props: { data } }
-// }
-
 async function search(key: string, setFun: (items: StoreItem[]) => void) {
-  //const items = await store.Search(key);
   if (!key || key === '') {
     setFun([]);
     return;
   }
-  const response = await fetch(url + key);
+  const response = await fetch("/anime/" + key);
   const data: Result = await response.json();
-  //console.log("res:" + JSON.stringify(data));
   const items = data.items;
   if (items) {
     setFun(items);
   }
 }
-async function test(count: number, setFun: (items: number) => void) {
-  setFun(count + 1);
-}
+
 
 const ItemsGroup = (props: { items: StoreItem[] }) => {
   const { items } = props;
@@ -69,7 +53,6 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
 
 const Home = () => {
   const [items, setItems] = useState<StoreItem[]>([]);
-  const [count, setCount] = useState(0);
   return (
     <Container>
       <Grid>
