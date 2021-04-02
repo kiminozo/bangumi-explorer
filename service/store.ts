@@ -87,7 +87,7 @@ async function writeFile() {
     //await read(Path.join('/Volumes/anime', '新番'), 1);
     await read(Path.join('.data', '新番'), 1);
     const data = index.export();
-    // await fs.promises.writeFile(dbFile, data, 'utf-8');
+    await fs.promises.writeFile(dbFile, data, 'utf-8');
 }
 
 async function test() {
@@ -115,7 +115,9 @@ export class IndexStore {
             index.import(data);
         }
         const res = await index.search(key, {
-            field: ["name_cn"],
+            field: ["name_cn", "name"],
+            bool: 'or',
+            limit: 12
         });
         return res;
     }
