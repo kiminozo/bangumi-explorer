@@ -87,16 +87,20 @@ const Home = (props: { domain: string }) => {
       <Container>
         <Grid>
           <Grid.Row>
-            <Link href={login_url(`${domain}/callback`)}>
-              <Button>
-                登录
-              </Button>
-            </Link>
+
           </Grid.Row>
           <Grid.Row centered>
             <Grid.Column width={10} >
               <Input fluid icon='search' placeholder='Search...'
-                onChange={(data) => search(data.target.value, setItems)} />
+                onChange={(data) => search(data.target.value, setItems)} >
+              </Input>
+            </Grid.Column>
+            <Grid.Column width={2} >
+              <Link href={login_url(`${domain}/callback`)}>
+                <Button>
+                  登录
+                </Button>
+              </Link>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

@@ -28,7 +28,7 @@ async function run() {
             }
             const redirect_uri = req.protocol + '://' + req.get('host') + "/callback";
             await api.accessToken(redirect_uri, code.toString(), state?.toString());
-            res.send(api.token);
+            return handle(req, res);
         });
         server.get('/anime/:key', async (req, res) => {
             const key = req.params.key;
