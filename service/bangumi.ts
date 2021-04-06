@@ -61,7 +61,7 @@ interface AccessTokenReq {
     state?: string;
 }
 
-interface AccessToken {
+export interface AccessToken {
     access_token: string;
     expires_in: number;
     token_type: string;

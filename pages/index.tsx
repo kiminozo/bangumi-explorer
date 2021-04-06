@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
+import { applySession } from 'next-session';
 import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
-
+import { IncomingMessage, ServerResponse } from 'http';
+import { Session } from 'next-session/dist/types';
 import absoluteUrl from 'next-absolute-url'
 
 import { Grid, Input, Item, Container, Icon, Card, Image, Segment, Label, Header, Rating, Button } from 'semantic-ui-react';
@@ -10,6 +12,7 @@ import { Grid, Input, Item, Container, Icon, Card, Image, Segment, Label, Header
 import 'semantic-ui-css/semantic.min.css'
 import { StoreItem } from '../service/store';
 import { login_url } from "../service/bangumi";
+
 
 interface Result {
   items: StoreItem[]
@@ -67,15 +70,22 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
 // }
 
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { origin } = absoluteUrl(context.req);
+export interface SessionContext {
+  req: IncomingMessage & { session: Session & { views: number, test?: string } };
+  res: ServerResponse;
+}
+
+export const getServerSideProps = async ({ req, res }: SessionContext) => {
+  const { origin } = absoluteUrl(req);
+  await applySession(req, res);
+  req.session.views = req.session.views ? req.session.views + 1 : 1;
   return {
-    props: { domain: origin }
+    props: { domain: origin, views: req.session.views, test: req.session.test }
   };
 }
 
-const Home = (props: { domain: string }) => {
-  const { domain } = props;
+const Home = (props: { domain: string, views: number, test?: string }) => {
+  const { domain, views, test } = props;
   const [items, setItems] = useState<StoreItem[]>([]);
   //const [loading, setLoading] = useState<boolean>(false);
   return (
@@ -98,9 +108,10 @@ const Home = (props: { domain: string }) => {
             <Grid.Column width={2} >
               <Link href={login_url(`${domain}/callback`)}>
                 <Button>
-                  登录
+                  登录{views}
                 </Button>
               </Link>
+              {test}
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

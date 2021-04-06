@@ -1,7 +1,7 @@
 import express from "express";
-//import session from 'express-session'
+import session from 'express-session'
 import next from 'next'
-import { BangumiAPI } from "./bangumi";
+import { BangumiAPI, AccessToken } from "./bangumi";
 import { IndexStore } from "./store";
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -13,7 +13,14 @@ const port = process.env.PORT || 3000;
 const api = new BangumiAPI();
 
 const server = express();
-//server.use(session({ secret: 'grant' }))
+server.use(session({ secret: 'grant-xxxx' }))
+
+declare module 'express-session' {
+    interface SessionData {
+        token: AccessToken;
+        test: string;
+    }
+}
 
 async function run() {
     try {
@@ -28,6 +35,8 @@ async function run() {
             }
             const redirect_uri = req.protocol + '://' + req.get('host') + "/callback";
             await api.accessToken(redirect_uri, code.toString(), state?.toString());
+            req.session.token = api.token;
+
             return handle(req, res);
         });
         server.get('/anime/:key', async (req, res) => {
@@ -49,6 +58,7 @@ async function run() {
             res.sendFile(index.getImagePath(id));
         })
         server.get('*', (req, res) => {
+            req.session.test = "Hello world 2020";
             return handle(req, res)
         });
         server.listen(port, () => {
