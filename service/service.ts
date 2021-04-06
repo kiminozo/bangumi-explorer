@@ -1,5 +1,7 @@
 import express from "express";
+//import session from 'express-session'
 import next from 'next'
+import { BangumiAPI } from "./bangumi";
 import { IndexStore } from "./store";
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -8,11 +10,26 @@ const handle = app.getRequestHandler();
 const index = new IndexStore();
 const port = process.env.PORT || 3000;
 
+const api = new BangumiAPI();
+
 const server = express();
+//server.use(session({ secret: 'grant' }))
+
 async function run() {
     try {
         await app.prepare();
-
+        server.get('/callback', async (req, res) => {
+            const { code, state } = req.query;
+            console.log("code:" + code);
+            //res.send(code);
+            if (!code) {
+                res.status(404);
+                return;
+            }
+            const redirect_uri = req.protocol + '://' + req.get('host') + "/callback";
+            await api.accessToken(redirect_uri, code.toString(), state?.toString());
+            res.send(api.token);
+        });
         server.get('/anime/:key', async (req, res) => {
             const key = req.params.key;
             if (!key) {

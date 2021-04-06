@@ -1,10 +1,15 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { Grid, Input, Item, Container, Icon, Card, Image, Segment, Label, Header, Rating } from 'semantic-ui-react';
+import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
+
+import absoluteUrl from 'next-absolute-url'
+
+import { Grid, Input, Item, Container, Icon, Card, Image, Segment, Label, Header, Rating, Button } from 'semantic-ui-react';
 
 import 'semantic-ui-css/semantic.min.css'
 import { StoreItem } from '../service/store';
+import { login_url } from "../service/bangumi";
 
 interface Result {
   items: StoreItem[]
@@ -62,7 +67,15 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
 // }
 
 
-const Home = () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { origin } = absoluteUrl(context.req);
+  return {
+    props: { domain: origin }
+  };
+}
+
+const Home = (props: { domain: string }) => {
+  const { domain } = props;
   const [items, setItems] = useState<StoreItem[]>([]);
   //const [loading, setLoading] = useState<boolean>(false);
   return (
@@ -73,6 +86,13 @@ const Home = () => {
       </Head>
       <Container>
         <Grid>
+          <Grid.Row>
+            <Link href={login_url(`${domain}/callback`)}>
+              <Button>
+                登录
+              </Button>
+            </Link>
+          </Grid.Row>
           <Grid.Row centered>
             <Grid.Column width={10} >
               <Input fluid icon='search' placeholder='Search...'
