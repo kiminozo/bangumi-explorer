@@ -33,6 +33,9 @@ export interface StoreItem extends Item {
     symbol?: string;
 }
 
+function imagePath(id: string | number): string {
+    return Path.resolve(dbPath, "images", id + ".jpg")
+}
 
 async function scan(path: string, deep: number): Promise<string[]> {
     let stack = await fs.promises.readdir(path);
@@ -57,7 +60,7 @@ async function readData(path: string): Promise<StoreItem | null> {
         const item: StoreItem = JSON.parse(data);
         item.path = path;
 
-        await fs.promises.copyFile(Path.join(path, 'Poster.jpg'), Path.join(dbPath, "images", item.id + ".jpg"))
+        await fs.promises.copyFile(Path.join(path, 'Poster.jpg'), imagePath(item.id))
         return item;
     } catch (error) {
         console.error(error);
@@ -123,7 +126,7 @@ export class IndexStore {
     }
 
     getImagePath(id: string): string {
-        return Path.resolve(dbPath, "images", id + ".jpg")
+        return Path.resolve(imagePath(id))
     }
 }
 
