@@ -69,6 +69,22 @@ export interface AccessToken {
     user_id: string;
 }
 
+export interface Avatar {
+    large: string;
+    medium: string;
+    small: string;
+}
+
+export interface User {
+    id: number;
+    url: string;
+    username: string;
+    nickname: string;
+    avatar: Avatar;
+    sign: string;
+    usergroup: number;
+}
+
 
 const appId = "bgm12835d9fe466616a5";
 const appSecret = "f8ff78be428a0642fd0008649394d963";
@@ -83,31 +99,41 @@ export function login_url(redirect_uri: string) {
     return url.toString();
 }
 
-export class BangumiAPI {
-    token?: AccessToken;
+const baseUrl = "https://api.bgm.tv/";
 
-    constructor() {
-    }
-
-    async accessToken(redirect_uri: string, code: string, state?: string) {
-        const data: AccessTokenReq = {
-            grant_type: "authorization_code",
-            client_id: appId,
-            client_secret: appSecret,
-            code,
-            redirect_uri, //"http://localhost:3000/callback",
-            state
-        };
-        try {
-            const res = await axios.post<AccessToken>("https://bgm.tv/oauth/access_token", data);
-            this.token = res.data;
-            console.log(this.token);
-        } catch (e) {
-            console.error(e);
+export async function accessToken(redirect_uri: string, code: string, state?: string): Promise<AccessToken | null> {
+    const data: AccessTokenReq = {
+        grant_type: "authorization_code",
+        client_id: appId,
+        client_secret: appSecret,
+        code,
+        redirect_uri, //"http://localhost:3000/callback",
+        state
+    };
+    try {
+        const res = await axios.post<AccessToken>("https://bgm.tv/oauth/access_token", data);
+        if (res.status === 200) {
+            console.log("oauth res:" + res.data);
+            return res.data;
+        } else {
+            console.error("oauth res:" + res.status);
+            return null;
         }
-
+    } catch (e) {
+        console.error(e);
+        return null;
     }
+
 }
 
-
+export async function getUser(name: string): Promise<User | null> {
+    try {
+        const res = await axios.get<User>(baseUrl + "/user/" + name);
+        console.log("user:" + JSON.stringify(res.data));
+        return res.data;
+    } catch (e) {
+        console.error(e);
+        return null;
+    }
+}
 

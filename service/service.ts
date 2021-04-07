@@ -1,7 +1,7 @@
 import express from "express";
 import session from 'express-session'
 import next from 'next'
-import { BangumiAPI, AccessToken } from "./bangumi";
+import { accessToken, AccessToken } from "./bangumi";
 import { IndexStore } from "./store";
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -10,10 +10,13 @@ const handle = app.getRequestHandler();
 const index = new IndexStore();
 const port = process.env.PORT || 3000;
 
-const api = new BangumiAPI();
 
 const server = express();
-server.use(session({ secret: 'grant-xxxx' }))
+server.use(session({
+    secret: 'grant-xxxx',
+    resave: true,
+    saveUninitialized: true
+}))
 
 declare module 'express-session' {
     interface SessionData {
@@ -34,9 +37,8 @@ async function run() {
                 return;
             }
             const redirect_uri = req.protocol + '://' + req.get('host') + "/callback";
-            await api.accessToken(redirect_uri, code.toString(), state?.toString());
-            req.session.token = api.token;
-
+            let token = await accessToken(redirect_uri, code.toString(), state?.toString());
+            req.session.token = token ?? undefined;
             return handle(req, res);
         });
         server.get('/anime/:key', async (req, res) => {

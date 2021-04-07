@@ -11,7 +11,7 @@ import { Grid, Input, Item, Container, Icon, Card, Image, Segment, Label, Header
 
 import 'semantic-ui-css/semantic.min.css'
 import { StoreItem } from '../service/store';
-import { login_url } from "../service/bangumi";
+import { login_url, getUser, AccessToken } from "../service/bangumi";
 
 
 interface Result {
@@ -69,9 +69,14 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
 //   return items;
 // }
 
+interface SessionData {
+  views: number;
+  test: string;
+  token: AccessToken;
+}
 
-export interface SessionContext {
-  req: IncomingMessage & { session: Session & { views: number, test?: string } };
+interface SessionContext {
+  req: IncomingMessage & { session: Session & Partial<SessionData> };
   res: ServerResponse;
 }
 
@@ -79,13 +84,23 @@ export const getServerSideProps = async ({ req, res }: SessionContext) => {
   const { origin } = absoluteUrl(req);
   await applySession(req, res);
   req.session.views = req.session.views ? req.session.views + 1 : 1;
+  let avatar: string | null = null;
+  console.log("token:" + req.session.token)
+  console.log("user:" + req.session.token?.user_id ?? "");
+  if (req.session.token && req.session.token.user_id) {
+
+    const user = await getUser(req.session.token.user_id);
+    avatar = user?.avatar.small ?? null;
+  }
+  console.log("avatar:" + avatar)
+
   return {
-    props: { domain: origin, views: req.session.views, test: req.session.test }
+    props: { domain: origin, views: req.session.views, test: req.session.test, avatar }
   };
 }
 
-const Home = (props: { domain: string, views: number, test?: string }) => {
-  const { domain, views, test } = props;
+const Home = (props: { domain: string, views: number, test?: string, avatar?: string }) => {
+  const { domain, views, test, avatar } = props;
   const [items, setItems] = useState<StoreItem[]>([]);
   //const [loading, setLoading] = useState<boolean>(false);
   return (
@@ -106,12 +121,18 @@ const Home = (props: { domain: string, views: number, test?: string }) => {
               </Input>
             </Grid.Column>
             <Grid.Column width={2} >
-              <Link href={login_url(`${domain}/callback`)}>
-                <Button>
-                  登录{views}
-                </Button>
-              </Link>
-              {test}
+              {
+                avatar ?
+                  (
+                    <Image src={avatar} />
+                  ) : (
+                    <Link href={login_url(`${domain}/callback`)}>
+                      <Button>
+                        登录{views}
+                      </Button>
+                    </Link>
+                  )
+              }
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
