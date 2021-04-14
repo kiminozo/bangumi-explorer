@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { applySession } from 'next-session';
@@ -32,42 +32,9 @@ async function search(key: string, updateItem: (items: StoreItem[]) => void) {
 }
 
 
-const ItemsGroup = (props: { items: StoreItem[] }) => {
-  const { items } = props;
-  return (<Grid relaxed columns={6}>
-    {
-      items.map(item => (
-        <Grid.Column>
-          <>
-            <Image wrapped rounded src={`/images/${item.id}`} size='small'
-              label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
-            />
-            <Header as="div" size="small"
-              content={item.name_cn ?? item.name}
-              subheader={item.air_date}
-            />
-            <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} />
-          </>
-        </Grid.Column>
-      ))
-    }
-  </Grid>)
-}
 
-// const searchHandle = async (query: string) => {
-//   const [items, setItems] = useState<StoreItem[]>([]);
-//   if (!query || query === '') {
-//     setItems([]);
-//     return;
-//   }
-//   const response = await fetch("/anime/" + key);
-//   const data: Result = await response.json();
-//   const newItems = data.items;
-//   if (newItems) {
-//     setItems(newItems);
-//   }
-//   return items;
-// }
+
+
 
 interface SessionData {
   views: number;
@@ -99,9 +66,68 @@ export const getServerSideProps = async ({ req, res }: SessionContext) => {
   };
 }
 
-const Home = (props: { domain: string, views: number, test?: string, avatar?: string }) => {
-  const { domain, views, test, avatar } = props;
+const ItemsGroup = (props: { items: StoreItem[] }) => {
+  const { items } = props;
+  return (<Grid relaxed columns={6}>
+    {
+      items.map(item => (
+        <Grid.Column>
+          <>
+            <Image wrapped rounded src={`/images/${item.id}`} size='small'
+              label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
+            />
+            <Header as="div" size="small"
+              content={item.name_cn ?? item.name}
+              subheader={item.air_date}
+            />
+            {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
+          </>
+        </Grid.Column>
+      ))
+    }
+  </Grid>)
+}
+
+const searchHandle = async (query: string) => {
+  if (!query || query === '') {
+    return [];
+  }
+  const response = await fetch("/anime/" + query);
+  const data: Result = await response.json();
+  const newItems = data.items;
+  return newItems ?? [];
+}
+
+const loadHandle = async () => {
+  const response = await fetch("/anime/");
+  const data: Result = await response.json();
+  const newItems = data.items;
+  return newItems ?? [];
+}
+
+interface Props {
+  domain: string;
+  views: number;
+  test?: string;
+  avatar?: string
+}
+
+const Home = (props: Props) => {
+  const { domain, views, avatar } = props;
   const [items, setItems] = useState<StoreItem[]>([]);
+
+  useEffect(() => {
+    const loadFn = async () => {
+      const loadItems = await loadHandle();
+      setItems(loadItems);
+    }
+    loadFn();
+  });
+
+  const searchData = async (data: React.ChangeEvent<HTMLInputElement>) => {
+    const newItems = await searchHandle(data.target.value);
+    setItems(newItems)
+  };
   //const [loading, setLoading] = useState<boolean>(false);
   return (
     <>
@@ -117,7 +143,7 @@ const Home = (props: { domain: string, views: number, test?: string, avatar?: st
           <Grid.Row centered>
             <Grid.Column width={10} >
               <Input fluid icon='search' placeholder='Search...'
-                onChange={(data) => search(data.target.value, setItems)} >
+                onChange={searchData} >
               </Input>
             </Grid.Column>
             <Grid.Column width={2} >

@@ -41,6 +41,10 @@ async function run() {
             req.session.token = token ?? undefined;
             return handle(req, res);
         });
+        server.get('/anime/', async (req, res) => {
+            const items = await index.Load();
+            res.send({ items: items });
+        });
         server.get('/anime/:key', async (req, res) => {
             const key = req.params.key;
             if (!key) {

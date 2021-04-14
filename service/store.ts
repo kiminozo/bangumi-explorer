@@ -111,18 +111,27 @@ export class IndexStore {
 
     }
 
-    async Search(key: string): Promise<StoreItem[]> {
+    private async Init() {
         if (!this.init) {
             this.init = true;
             const data = await fs.promises.readFile(dbFile, 'utf-8')
             index.import(data);
         }
+    }
+
+    async Search(key: string): Promise<StoreItem[]> {
+        await this.Init();
         const res = await index.search(key, {
             field: ["name_cn", "name"],
             bool: 'or',
             limit: 12
         });
         return res;
+    }
+
+    async Load(): Promise<StoreItem[]> {
+        await this.Init();
+        return index.where({});
     }
 
     getImagePath(id: string): string {
