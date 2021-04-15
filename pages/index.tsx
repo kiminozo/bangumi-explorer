@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { applySession } from 'next-session';
@@ -85,7 +85,7 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
                 value.map(item => (
                   <Grid.Column>
                     <Image wrapped rounded src={`/images/${item.id}`} size='small'
-                      label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
+                    // label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
                     />
                     <Header as="div" size="tiny"
                       content={item.name_cn ?? item.name}
@@ -151,19 +151,25 @@ interface Props {
 const Home = (props: Props) => {
   const { domain, views, avatar } = props;
   const [items, setItems] = useState<StoreItem[]>([]);
+  const [key, setKey] = useState<string>("");
 
   useEffect(() => {
     const loadFn = async () => {
-      const loadItems = await loadHandle();
-      setItems(loadItems);
+      let newItems;
+      if (key) {
+        newItems = await searchHandle(key);
+      } else {
+        newItems = await loadHandle();
+      }
+      setItems(newItems)
     }
     loadFn();
   });
 
-  const searchData = async (data: React.ChangeEvent<HTMLInputElement>) => {
-    const newItems = await searchHandle(data.target.value);
-    setItems(newItems)
-  };
+  // const searchData = async (data: React.ChangeEvent<HTMLInputElement>) => {
+  //   const newItems = await searchHandle(data.target.value);
+  //   setItems(newItems)
+  // };
   //const [loading, setLoading] = useState<boolean>(false);
   return (
     <>
@@ -179,7 +185,7 @@ const Home = (props: Props) => {
           <Grid.Row centered>
             <Grid.Column width={14} >
               <Input fluid icon='search' placeholder='搜索...'
-                onChange={searchData} >
+                onChange={(data) => setKey(data.target.value)} >
               </Input>
             </Grid.Column>
             <Grid.Column width={2} >
