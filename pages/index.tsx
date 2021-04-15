@@ -14,10 +14,7 @@ import {
 } from 'semantic-ui-react';
 
 import {
-  DateInput,
-  TimeInput,
   MonthRangeInput,
-  DatesRangeInput
 } from 'semantic-ui-calendar-react';
 
 import moment from 'moment';
@@ -74,7 +71,7 @@ export const getServerSideProps = async ({ req, res }: SessionContext) => {
   console.log("avatar:" + avatar)
 
   return {
-    props: { domain: origin, views: req.session.views, test: req.session.test, avatar }
+    props: { domain: origin, views: req.session.views, avatar }
   };
 }
 
@@ -127,7 +124,6 @@ const loadItems = async (url: string) => {
 interface Props {
   domain: string;
   views: number;
-  test?: string;
   avatar?: string
 }
 

@@ -51,7 +51,7 @@ async function run() {
                 res.send({ items: [] });
                 return;
             }
-            console.log("range:" + range);
+            //console.log("range:" + range);
             const items = await index.Load(range);
             res.send({ items: items });
         });
@@ -74,7 +74,7 @@ async function run() {
             res.sendFile(index.getImagePath(id));
         })
         server.get('*', (req, res) => {
-            req.session.test = "Hello world 2020";
+            // req.session.test = "Hello world 2020";
             return handle(req, res)
         });
         server.listen(port, () => {
