@@ -8,7 +8,20 @@ import { Session } from 'next-session/dist/types';
 import absoluteUrl from 'next-absolute-url'
 import _ from "lodash";
 
-import { Grid, Input, Item, Container, Icon, Divider, Image, Label, Header, Rating, Button } from 'semantic-ui-react';
+import {
+  Grid, Input, Item, Container, Icon,
+  Divider, Image, Label, Header, Rating, Button
+} from 'semantic-ui-react';
+
+import {
+  DateInput,
+  TimeInput,
+  MonthRangeInput,
+  DatesRangeInput
+} from 'semantic-ui-calendar-react';
+
+import moment from 'moment';
+import 'moment/locale/zh-cn';
 
 import 'semantic-ui-css/semantic.min.css'
 import { StoreItem } from '../service/store';
@@ -102,40 +115,10 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
         .value()
     }
   </Grid >);
-
-  // return (<Grid relaxed columns={6}>
-  //   {
-  //     _.forEach(group,))
-  //     items.map(item => (
-  //   <Grid.Column>
-  //     <>
-  //       <Image wrapped rounded src={`/images/${item.id}`} size='small'
-  //         label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
-  //       />
-  //       <Header as="div" size="small"
-  //         content={item.name_cn ?? item.name}
-  //         subheader={item.air_date}
-  //       />
-  //       {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
-  //     </>
-  //   </Grid.Column>
-  //     ))
-  //   }
-  // </Grid>)
 }
 
-const searchHandle = async (query: string) => {
-  if (!query || query === '') {
-    return [];
-  }
-  const response = await fetch("/anime/" + query);
-  const data: Result = await response.json();
-  const newItems = data.items;
-  return newItems ?? [];
-}
-
-const loadHandle = async () => {
-  const response = await fetch("/anime/");
+const loadItems = async (url: string) => {
+  const response = await fetch(url);
   const data: Result = await response.json();
   const newItems = data.items;
   return newItems ?? [];
@@ -149,28 +132,29 @@ interface Props {
 }
 
 const Home = (props: Props) => {
-  const { domain, views, avatar } = props;
+  const { domain, avatar } = props;
   const [items, setItems] = useState<StoreItem[]>([]);
-  const [key, setKey] = useState<string>("");
+  const [query, setQuery] = useState<string>("");
+  const [monthRange, setMonthRange] = useState<string>("2020-01 - 2020-12");
 
-  useEffect(() => {
-    const loadFn = async () => {
-      let newItems;
-      if (key) {
-        newItems = await searchHandle(key);
-      } else {
-        newItems = await loadHandle();
+  const loadFn = async () => {
+    let url;
+    if (query) {
+      url = "/anime/" + query;
+    } else if (monthRange) {
+      if (monthRange.split(" - ").length < 2) {
+        return;
       }
-      setItems(newItems)
+      url = "/anime/r=" + monthRange;
+    } else {
+      url = "/anime/"
     }
-    loadFn();
-  });
+    const newItems = await loadItems(url);
+    setItems(newItems)
+  }
 
-  // const searchData = async (data: React.ChangeEvent<HTMLInputElement>) => {
-  //   const newItems = await searchHandle(data.target.value);
-  //   setItems(newItems)
-  // };
-  //const [loading, setLoading] = useState<boolean>(false);
+  useEffect(() => { loadFn() }, [query, monthRange]);
+
   return (
     <>
       <Head>
@@ -183,10 +167,21 @@ const Home = (props: Props) => {
 
           </Grid.Row>
           <Grid.Row centered>
-            <Grid.Column width={14} >
+            <Grid.Column width={10} >
               <Input fluid icon='search' placeholder='搜索...'
-                onChange={(data) => setKey(data.target.value)} >
+                onChange={(data) => setQuery(data.target.value)} >
               </Input>
+            </Grid.Column>
+            <Grid.Column width={4}>
+              <MonthRangeInput
+                localization='zh-cn'
+                placeholder="From - To"
+                value={monthRange}
+                closable
+                clearable
+                dateFormat='YYYY-MM'
+                iconPosition="left"
+                onChange={(_e, { value }) => { setMonthRange(value) }} />
             </Grid.Column>
             <Grid.Column width={2} >
               {
@@ -203,6 +198,7 @@ const Home = (props: Props) => {
               }
             </Grid.Column>
           </Grid.Row>
+
           <Grid.Row>
             <ItemsGroup items={items} />
           </Grid.Row>

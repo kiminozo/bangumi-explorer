@@ -45,13 +45,23 @@ async function run() {
             const items = await index.Load();
             res.send({ items: items });
         });
+        server.get('/anime/r=:range', async (req, res) => {
+            const range = req.params.range;
+            if (!range) {
+                res.send({ items: [] });
+                return;
+            }
+            console.log("range:" + range);
+            const items = await index.Load(range);
+            res.send({ items: items });
+        });
         server.get('/anime/:key', async (req, res) => {
             const key = req.params.key;
             if (!key) {
                 res.send({ items: [] });
                 return;
             }
-            const items = await index.Search(req.params.key);
+            const items = await index.Search(key);
             //console.log("Search:" + req.params.key);
             res.send({ items: items });
         });

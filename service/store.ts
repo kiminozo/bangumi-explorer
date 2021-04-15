@@ -104,7 +104,20 @@ async function test() {
 
 }
 
-
+function inRange(air_date: string, range?: string) {
+    if (!range) {
+        return true;
+    }
+    const data = new Date(air_date);
+    const ranges = range.split(" - ");
+    if (ranges.length < 2) {
+        return false;
+    }
+    const st = new Date(ranges[0]);
+    const et = new Date(ranges[1]);
+    et.setMonth(et.getMonth() + 1);
+    return (data > st && data < et);
+}
 
 export class IndexStore {
     init = false;
@@ -131,9 +144,9 @@ export class IndexStore {
         return res;
     }
 
-    async Load(): Promise<StoreItem[]> {
+    async Load(range?: string): Promise<StoreItem[]> {
         await this.Init();
-        return index.where({});
+        return index.where(item => inRange(item.air_date, range));
     }
 
     getImagePath(id: string): string {
