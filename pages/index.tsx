@@ -6,8 +6,9 @@ import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
 import { IncomingMessage, ServerResponse } from 'http';
 import { Session } from 'next-session/dist/types';
 import absoluteUrl from 'next-absolute-url'
+import _ from "lodash";
 
-import { Grid, Input, Item, Container, Icon, Card, Image, Segment, Label, Header, Rating, Button } from 'semantic-ui-react';
+import { Grid, Input, Item, Container, Icon, Divider, Image, Label, Header, Rating, Button } from 'semantic-ui-react';
 
 import 'semantic-ui-css/semantic.min.css'
 import { StoreItem } from '../service/store';
@@ -17,23 +18,6 @@ import { login_url, getUser, AccessToken } from "../service/bangumi";
 interface Result {
   items: StoreItem[]
 }
-
-async function search(key: string, updateItem: (items: StoreItem[]) => void) {
-  if (!key || key === '') {
-    updateItem([]);
-    return;
-  }
-  const response = await fetch("/anime/" + key);
-  const data: Result = await response.json();
-  const items = data.items;
-  if (items) {
-    updateItem(items);
-  }
-}
-
-
-
-
 
 
 interface SessionData {
@@ -45,6 +29,21 @@ interface SessionData {
 interface SessionContext {
   req: IncomingMessage & { session: Session & Partial<SessionData> };
   res: ServerResponse;
+}
+
+function quarter(date: Date): string {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  if (month <= 3) {
+    return year + "-01";
+  }
+  if (month <= 6) {
+    return year + "-04";
+  }
+  if (month <= 9) {
+    return year + "-07";
+  }
+  return year + "-10";
 }
 
 export const getServerSideProps = async ({ req, res }: SessionContext) => {
@@ -70,22 +69,59 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
   const { items } = props;
   return (<Grid relaxed columns={6}>
     {
-      items.map(item => (
-        <Grid.Column>
+      _.chain(items)
+        .orderBy(item => item.air_date, 'desc')
+        .groupBy(item => quarter(new Date(item.air_date)))
+        .toPairs()
+        .map(([key, value]) => (
           <>
-            <Image wrapped rounded src={`/images/${item.id}`} size='small'
-              label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
-            />
-            <Header as="div" size="small"
-              content={item.name_cn ?? item.name}
-              subheader={item.air_date}
-            />
-            {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
-          </>
-        </Grid.Column>
-      ))
+            <Grid.Row>
+              <Grid.Column width={6}>
+                <Header>{key}</Header>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row>
+              {
+                value.map(item => (
+                  <Grid.Column>
+                    <Image wrapped rounded src={`/images/${item.id}`} size='small'
+                      label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
+                    />
+                    <Header as="div" size="tiny"
+                      content={item.name_cn ?? item.name}
+                      subheader={item.air_date}
+                    />
+                    <br />
+                    {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
+                  </Grid.Column>
+                ))
+              }
+            </Grid.Row>
+            <Divider />
+          </>))
+        .value()
     }
-  </Grid>)
+  </Grid >);
+
+  // return (<Grid relaxed columns={6}>
+  //   {
+  //     _.forEach(group,))
+  //     items.map(item => (
+  //   <Grid.Column>
+  //     <>
+  //       <Image wrapped rounded src={`/images/${item.id}`} size='small'
+  //         label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
+  //       />
+  //       <Header as="div" size="small"
+  //         content={item.name_cn ?? item.name}
+  //         subheader={item.air_date}
+  //       />
+  //       {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
+  //     </>
+  //   </Grid.Column>
+  //     ))
+  //   }
+  // </Grid>)
 }
 
 const searchHandle = async (query: string) => {
@@ -141,12 +177,12 @@ const Home = (props: Props) => {
 
           </Grid.Row>
           <Grid.Row centered>
-            <Grid.Column width={10} >
+            <Grid.Column width={12} >
               <Input fluid icon='search' placeholder='Search...'
                 onChange={searchData} >
               </Input>
             </Grid.Column>
-            <Grid.Column width={2} >
+            <Grid.Column width={4} >
               {
                 avatar ?
                   (
@@ -154,7 +190,7 @@ const Home = (props: Props) => {
                   ) : (
                     <Link href={login_url(`${domain}/callback`)}>
                       <Button>
-                        登录{views}
+                        登录
                       </Button>
                     </Link>
                   )
