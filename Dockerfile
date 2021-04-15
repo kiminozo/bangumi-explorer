@@ -39,4 +39,5 @@ COPY --chown=node:node --from=prod /app/package.json ./package.json
 USER node
 VOLUME [ "/app/database" ]
 EXPOSE 3000
-CMD ["yarn", "start"]
+ENV NODE_ENV=production
+CMD ["node", "build/service.js"]
