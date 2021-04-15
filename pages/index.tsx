@@ -168,7 +168,7 @@ const Home = (props: Props) => {
   return (
     <>
       <Head>
-        <title>title</title>
+        <title>我的番组</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <Container>
@@ -177,12 +177,12 @@ const Home = (props: Props) => {
 
           </Grid.Row>
           <Grid.Row centered>
-            <Grid.Column width={12} >
-              <Input fluid icon='search' placeholder='Search...'
+            <Grid.Column width={14} >
+              <Input fluid icon='search' placeholder='搜索...'
                 onChange={searchData} >
               </Input>
             </Grid.Column>
-            <Grid.Column width={4} >
+            <Grid.Column width={2} >
               {
                 avatar ?
                   (
