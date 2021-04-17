@@ -20,7 +20,7 @@ server.use(session({
 declare module 'express-session' {
     interface SessionData {
         token: AccessToken;
-        test: string;
+        user: string;
     }
 }
 const controller = new Controller();
@@ -36,13 +36,14 @@ async function run() {
                 res.status(404);
                 return;
             }
-            const redirect_uri = req.protocol + '://' + req.get('host') + "/callback";
+            const redirect_uri = 'http://' + req.get('host') + " / callback";
             let token = await controller.callback(redirect_uri, code.toString(), state?.toString());
             req.session.token = token ?? undefined;
+
             return handle(req, res);
         });
         server.get('/anime/', async (req, res) => {
-            const items = await controller.load();
+            const items = await controller.load(undefined, req.session.user);
             res.send({ items: items });
         });
         server.get('/anime/r=:range', async (req, res) => {
@@ -52,7 +53,7 @@ async function run() {
                 return;
             }
             //console.log("range:" + range);
-            const items = await controller.load(range);
+            const items = await controller.load(range, req.session.user);
             res.send({ items: items });
         });
         server.get('/anime/:key', async (req, res) => {
@@ -61,7 +62,7 @@ async function run() {
                 res.send({ items: [] });
                 return;
             }
-            const items = await controller.search(key);
+            const items = await controller.search(key, req.session.user);
             //console.log("Search:" + req.params.key);
             res.send({ items: items });
         });
@@ -74,6 +75,7 @@ async function run() {
             res.sendFile(controller.getImagePath(id));
         })
         server.get('*', (req, res) => {
+            req.session.user = "kiminozo";
             // req.session.test = "Hello world 2020";
             return handle(req, res)
         });

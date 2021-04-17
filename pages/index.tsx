@@ -92,6 +92,14 @@ const imageLable = (watchType?: WatchType): SemanticShorthandItem<LabelProps> =>
   }
 }
 
+const defaultRange = (): string => {
+  const now = new Date();
+  const et = moment(now).format('YYYY-MM');
+  now.setMonth(now.getMonth() - 3);
+  const st = moment(now).format('YYYY-MM');
+  return `${st} - ${et}`;
+}
+
 const ItemsGroup = (props: { items: BgmItem[] }) => {
   const { items } = props;
   return (<Grid relaxed columns={6}>
@@ -157,7 +165,7 @@ const Home = (props: Props) => {
   const { domain, avatar } = props;
   const [items, setItems] = useState<BgmItem[]>([]);
   const [query, setQuery] = useState<string>("");
-  const [monthRange, setMonthRange] = useState<string>("2020-01 - 2020-12");
+  const [monthRange, setMonthRange] = useState<string>(defaultRange());
 
   const loadFn = async () => {
     let url;

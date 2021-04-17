@@ -2,6 +2,7 @@ import * as fs from "fs"
 import Path = require('path');
 import low = require('lowdb');
 import FileSync = require('lowdb/adapters/FileSync')
+import FileAsync = require('lowdb/adapters/FileAsync')
 
 const dev = process.env.NODE_ENV !== 'production'
 const dbPath = dev ? "output" : "database";
@@ -14,31 +15,41 @@ export interface WatchInfo {
     type: WatchType;
 }
 
-// interface WatchInfo {
-//     count: number;
-//     dataList?: WatchData[];
-// }
-
-export interface WatchDB {
-    info: WatchInfo[];
+export interface UserInfo {
+    id: number;
+    name: string;
+    watchs: WatchInfo[];
 }
 
+export interface WatchDB {
+    users: UserInfo[];
+}
 
 export default class BangumiDB {
-    db: low.LowdbSync<WatchDB>;
+    db: low.LowdbAsync<WatchDB> | null = null;
 
-    constructor(user: string) {
-        const adapter = new FileSync<WatchDB>(Path.join(dbPath, `${user}.db.json`))
-        this.db = low(adapter);
+    constructor() {
+    }
+
+    async prepare() {
+        const adapter = new FileAsync<WatchDB>(Path.join(dbPath, `watch.db`))
+        this.db = await low(adapter);
     }
 
     save(infoList: WatchInfo[]) {
-        this.db.set('info', infoList).write();
+        // this.db.set('info', infoList).write();
     }
 
-    get(id: number): WatchInfo | null {
-        return this.db.get('info').find({ id }).value()
+    get(user: string | number, id: number): WatchInfo | null {
+        if (this.db === null) {
+            return null;
+        }
+        let query = typeof user === 'string' ? { name: user } : { id: user }
+        const item = this.db.get("users").find(query)
+            .get('watchs').find({ id }).value();
+        return item;
     }
+
 }
 // const info2 = db.get('info')
 //     .filter(p => p.type === 'collect')
@@ -46,3 +57,4 @@ export default class BangumiDB {
 //     .value()
 // const db = new BangumiDB("kiminozo");
 // console.log(db.get(183957));
+//test();

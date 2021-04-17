@@ -26,18 +26,18 @@ function inRange(air_date: string, range?: string) {
 }
 
 const index = indexStore();
-const db = new BangumiDB("kiminozo");
+const db = new BangumiDB();
 
 export default class Controller {
 
     constructor() {
     }
 
-    private watchState(item: StoreItem): BgmItem {
-        if (!item) {
+    private watchState(item: StoreItem, user?: number | string): BgmItem {
+        if (!item || !user) {
             return item;
         }
-        const watchInfo = db.get(item.id);
+        const watchInfo = db.get(user, item.id);
         if (!watchInfo) {
             return item;
         }
@@ -46,30 +46,25 @@ export default class Controller {
 
     async prepare() {
         await importData();
-        //TEST
-        // this.login("kiminozo");
+        await db.prepare();
     }
 
     async callback(redirect_uri: string, code: string, state?: string): Promise<AccessToken | null> {
         return await accessToken(redirect_uri, code, state);
     }
 
-    login(user: string) {
-        //this.userDB = new BangumiDB(user);
-    }
-
-    async load(range?: string): Promise<BgmItem[]> {
+    async load(range?: string, user?: number | string): Promise<BgmItem[]> {
         return index.where(item => inRange(item.air_date, range))
-            .map(this.watchState);
+            .map(item => this.watchState(item, user));
     }
 
-    async search(key: string): Promise<BgmItem[]> {
+    async search(key: string, user?: number | string): Promise<BgmItem[]> {
         const res = await index.search(key, {
             field: ["name_cn", "name"],
             bool: 'or',
             limit: 12
         });
-        return res.map(item => this.watchState(item));
+        return res.map(item => this.watchState(item, user));
     }
 
     getImagePath(id: string): string {
