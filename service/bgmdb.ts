@@ -50,6 +50,16 @@ export default class BangumiDB {
         return item;
     }
 
+    getAll(user: string | number): WatchInfo[] {
+        if (this.db === null) {
+            return [];
+        }
+        let query = typeof user === 'string' ? { name: user } : { id: user }
+        const items = this.db.get("users").find(query)
+            .get('watchs').value();
+        return items;
+    }
+
 }
 // const info2 = db.get('info')
 //     .filter(p => p.type === 'collect')
@@ -58,3 +68,4 @@ export default class BangumiDB {
 // const db = new BangumiDB("kiminozo");
 // console.log(db.get(183957));
 //test();
+

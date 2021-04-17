@@ -12,7 +12,8 @@
     "build": "next build && tsc --project tsconfig.server.json",
     "dev": "nodemon --exec ./node_modules/.bin/ts-node -- ./service/service.ts",
     "test:store": "./node_modules/.bin/ts-node -- ./service/store.ts",
-    "test:db": "./node_modules/.bin/ts-node -- ./service/bgmdb.ts"
+    "test:db": "./node_modules/.bin/ts-node -- ./service/bgmdb.ts",
+    "diff": "./node_modules/.bin/ts-node -- ./service/diff.ts"
   },
   "dependencies": {
     "@types/lowdb": "^1.0.9",
