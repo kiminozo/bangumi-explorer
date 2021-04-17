@@ -1,7 +1,7 @@
 import { Item } from "./bangumi";
 import fs from "fs";
 import Path from "path";
-import FlexSearch from "flexsearch";
+import FlexSearch, { Index } from "flexsearch";
 //import jieba from 'nodejieba';
 import { Segment } from 'segment';
 
@@ -27,13 +27,15 @@ const index = FlexSearch.create<StoreItem>({
     },
 });
 
-export interface StoreItem extends Item {
+export interface StoreInfo extends Item {
     path?: string;
     disk?: string;
     symbol?: string;
 }
 
-function imagePath(id: string | number): string {
+export type StoreItem = Item & StoreInfo;
+
+export function imagePath(id: string | number): string {
     return Path.resolve(dbPath, "images", id + ".jpg")
 }
 
@@ -104,55 +106,47 @@ async function test() {
 
 }
 
-function inRange(air_date: string, range?: string) {
-    if (!range) {
-        return true;
-    }
-    const data = new Date(air_date);
-    const ranges = range.split(" - ");
-    if (ranges.length < 2) {
-        return false;
-    }
-    const st = new Date(ranges[0]);
-    const et = new Date(ranges[1]);
-    et.setMonth(et.getMonth() + 1);
-    return (data > st && data < et);
+export function indexStore(): Index<StoreItem> {
+    return index;
 }
 
-export class IndexStore {
-    init = false;
-
-    constructor() {
-
-    }
-
-    private async Init() {
-        if (!this.init) {
-            this.init = true;
-            const data = await fs.promises.readFile(dbFile, 'utf-8')
-            index.import(data);
-        }
-    }
-
-    async Search(key: string): Promise<StoreItem[]> {
-        await this.Init();
-        const res = await index.search(key, {
-            field: ["name_cn", "name"],
-            bool: 'or',
-            limit: 12
-        });
-        return res;
-    }
-
-    async Load(range?: string): Promise<StoreItem[]> {
-        await this.Init();
-        return index.where(item => inRange(item.air_date, range));
-    }
-
-    getImagePath(id: string): string {
-        return Path.resolve(imagePath(id))
-    }
+export async function importData() {
+    const data = await fs.promises.readFile(dbFile, 'utf-8')
+    index.import(data);
 }
+
+// export class IndexStore {
+//     init = false;
+
+//     constructor() {
+
+//     }
+
+//     async Init() {
+//         if (!this.init) {
+//             this.init = true;
+//             const data = await fs.promises.readFile(dbFile, 'utf-8')
+//             index.import(data);
+//         }
+//     }
+
+//     async Search(key: string): Promise<StoreItem[]> {
+//         const res = await index.search(key, {
+//             field: ["name_cn", "name"],
+//             bool: 'or',
+//             limit: 12
+//         });
+//         return res;
+//     }
+
+//     async Load(range?: string): Promise<StoreItem[]> {
+//         return index.where(item => inRange(item.air_date, range));
+//     }
+
+//     getImagePath(id: string): string {
+//         return Path.resolve(imagePath(id))
+//     }
+// }
 
 //writeFile();
 

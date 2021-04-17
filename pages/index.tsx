@@ -10,7 +10,8 @@ import _ from "lodash";
 
 import {
   Grid, Input, Item, Container, Icon,
-  Divider, Image, Label, Header, Rating, Button
+  Divider, Image, Label, Header, Rating, Button,
+  SemanticShorthandItem, LabelProps
 } from 'semantic-ui-react';
 
 import {
@@ -21,12 +22,13 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 
 import 'semantic-ui-css/semantic.min.css'
-import { StoreItem } from '../service/store';
 import { login_url, getUser, AccessToken } from "../service/bangumi";
+import { BgmItem } from '../service/controller';
+import { WatchType } from '../service/bgmdb';
 
 
 interface Result {
-  items: StoreItem[]
+  items: BgmItem[]
 }
 
 
@@ -75,7 +77,22 @@ export const getServerSideProps = async ({ req, res }: SessionContext) => {
   };
 }
 
-const ItemsGroup = (props: { items: StoreItem[] }) => {
+const imageLable = (watchType?: WatchType): SemanticShorthandItem<LabelProps> => {
+  switch (watchType) {
+    case 'collect':
+      return { color: 'blue', corner: 'right', icon: 'check' };
+    case "do":
+      return { color: 'olive', corner: 'right', icon: 'play' };
+    case "on_hold":
+      return { color: 'brown', corner: 'right', icon: 'pause' };
+    case "dropped":
+      return { color: 'red', corner: 'right', icon: 'ban' };
+    default:
+      return null;
+  }
+}
+
+const ItemsGroup = (props: { items: BgmItem[] }) => {
   const { items } = props;
   return (<Grid relaxed columns={6}>
     {
@@ -94,13 +111,22 @@ const ItemsGroup = (props: { items: StoreItem[] }) => {
               {
                 value.map(item => (
                   <Grid.Column>
-                    <Image wrapped rounded src={`/images/${item.id}`} size='small'
+                    <Image style={{ "overflow": "hidden" }} wrapped rounded src={`/images/${item.id}`} size='small'
+                      label={imageLable(item.watchType)}
                     // label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
                     />
-                    <Header as="div" size="tiny"
-                      content={item.name_cn ?? item.name}
+                    {/* <Header as="div" size="tiny"
+                      content={item.name_cn !== "" ? item.name_cn : item.name}
                       subheader={item.air_date}
-                    />
+                    /> */}
+                    <Header as='div' size="tiny">
+                      <a target="_blank" href={item.url}>
+                        {item.name_cn !== "" ? item.name_cn : item.name}
+                      </a>
+                      <Header.Subheader>
+                        {item.air_date}
+                      </Header.Subheader>
+                    </Header>
                     <br />
                     {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
                   </Grid.Column>
@@ -129,7 +155,7 @@ interface Props {
 
 const Home = (props: Props) => {
   const { domain, avatar } = props;
-  const [items, setItems] = useState<StoreItem[]>([]);
+  const [items, setItems] = useState<BgmItem[]>([]);
   const [query, setQuery] = useState<string>("");
   const [monthRange, setMonthRange] = useState<string>("2020-01 - 2020-12");
 

@@ -198,10 +198,17 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/lodash@^4.14.168":
+"@types/lodash@*", "@types/lodash@^4.14.168":
   version "4.14.168"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.168.tgz#fe24632e79b7ade3f132891afff86caa5e5ce008"
   integrity sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q==
+
+"@types/lowdb@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.npm.taobao.org/@types/lowdb/download/@types/lowdb-1.0.9.tgz#1f6c27df72dd1c64522cc9a4566796d2dd058d38"
+  integrity sha1-H2wn33LdHGRSLMmkVmeW0t0FjTg=
+  dependencies:
+    "@types/lodash" "*"
 
 "@types/mime@^1":
   version "1.3.2"
@@ -1285,7 +1292,7 @@ got@^9.6.0:
     to-readable-stream "^1.0.0"
     url-parse-lax "^3.0.0"
 
-graceful-fs@^4.1.2:
+graceful-fs@^4.1.2, graceful-fs@^4.1.3:
   version "4.2.6"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
@@ -1516,6 +1523,11 @@ is-path-inside@^3.0.1:
   resolved "https://registry.yarnpkg.com/is-path-inside/-/is-path-inside-3.0.3.tgz#d231362e53a07ff2b0e0ea7fed049161ffd16283"
   integrity sha512-Fd4gABb+ycGAmKou8eMftCupSir5lRxqf4aD/vd0cD2qc4HL07OjCeuHMr8Ro4CoMaeCKDB0/ECBOVWjTwUvPQ==
 
+is-promise@^2.1.0:
+  version "2.2.2"
+  resolved "https://registry.npm.taobao.org/is-promise/download/is-promise-2.2.2.tgz?cache=0&sync_timestamp=1588002411837&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fis-promise%2Fdownload%2Fis-promise-2.2.2.tgz#39ab959ccbf9a774cf079f7b40c7a26f763135f1"
+  integrity sha1-OauVnMv5p3TPB597QMeib3YxNfE=
+
 is-typedarray@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"
@@ -1621,7 +1633,7 @@ lodash.sortby@^4.7.0:
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
   integrity sha1-7dFMgk4sycHgsKG0K7UhBRakJDg=
 
-lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.21:
+lodash@4, lodash@^4.17.13, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -1632,6 +1644,17 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
+
+lowdb@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/lowdb/download/lowdb-1.0.0.tgz#5243be6b22786ccce30e50c9a33eac36b20c8064"
+  integrity sha1-UkO+ayJ4bMzjDlDJoz6sNrIMgGQ=
+  dependencies:
+    graceful-fs "^4.1.3"
+    is-promise "^2.1.0"
+    lodash "4"
+    pify "^3.0.0"
+    steno "^0.4.1"
 
 lowercase-keys@^1.0.0, lowercase-keys@^1.0.1:
   version "1.0.1"
@@ -2149,6 +2172,11 @@ picomatch@^2.0.4, picomatch@^2.2.1:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.2.2.tgz#21f333e9b6b8eaff02468f5146ea406d345f4dad"
   integrity sha512-q0M/9eZHzmr0AulXyPwNfZjtwZ/RBZlbN3K3CErVrk50T2ASYI7Bye0EvekFY3IP1Nt2DHu0re+V2ZHIpMkuWg==
 
+pify@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/pify/download/pify-3.0.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fpify%2Fdownload%2Fpify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
+  integrity sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=
+
 pkg-dir@^4.1.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-4.2.0.tgz#f099133df7ede422e81d1d8448270eeb3e4261f3"
@@ -2650,6 +2678,13 @@ stacktrace-parser@0.1.10:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
+
+steno@^0.4.1:
+  version "0.4.4"
+  resolved "https://registry.npm.taobao.org/steno/download/steno-0.4.4.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fsteno%2Fdownload%2Fsteno-0.4.4.tgz#071105bdfc286e6615c0403c27e9d7b5dcb855cb"
+  integrity sha1-BxEFvfwobmYVwEA8J+nXtdy4Vcs=
+  dependencies:
+    graceful-fs "^4.1.3"
 
 stream-browserify@3.0.0:
   version "3.0.0"

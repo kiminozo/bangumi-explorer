@@ -2,12 +2,11 @@ import express from "express";
 import session from 'express-session'
 import next from 'next'
 import { accessToken, AccessToken } from "./bangumi";
-import { IndexStore } from "./store";
+import Controller from "./controller";
 
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler();
-const index = new IndexStore();
 const port = process.env.PORT || 3000;
 
 
@@ -24,10 +23,11 @@ declare module 'express-session' {
         test: string;
     }
 }
-
+const controller = new Controller();
 async function run() {
     try {
         await app.prepare();
+        await controller.prepare();
         server.get('/callback', async (req, res) => {
             const { code, state } = req.query;
             console.log("code:" + code);
@@ -37,12 +37,12 @@ async function run() {
                 return;
             }
             const redirect_uri = req.protocol + '://' + req.get('host') + "/callback";
-            let token = await accessToken(redirect_uri, code.toString(), state?.toString());
+            let token = await controller.callback(redirect_uri, code.toString(), state?.toString());
             req.session.token = token ?? undefined;
             return handle(req, res);
         });
         server.get('/anime/', async (req, res) => {
-            const items = await index.Load();
+            const items = await controller.load();
             res.send({ items: items });
         });
         server.get('/anime/r=:range', async (req, res) => {
@@ -52,7 +52,7 @@ async function run() {
                 return;
             }
             //console.log("range:" + range);
-            const items = await index.Load(range);
+            const items = await controller.load(range);
             res.send({ items: items });
         });
         server.get('/anime/:key', async (req, res) => {
@@ -61,7 +61,7 @@ async function run() {
                 res.send({ items: [] });
                 return;
             }
-            const items = await index.Search(key);
+            const items = await controller.search(key);
             //console.log("Search:" + req.params.key);
             res.send({ items: items });
         });
@@ -71,7 +71,7 @@ async function run() {
                 res.status(404);
                 return;
             }
-            res.sendFile(index.getImagePath(id));
+            res.sendFile(controller.getImagePath(id));
         })
         server.get('*', (req, res) => {
             // req.session.test = "Hello world 2020";
