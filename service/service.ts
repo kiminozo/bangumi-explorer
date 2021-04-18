@@ -36,10 +36,9 @@ async function run() {
                 res.status(404);
                 return;
             }
-            const redirect_uri = 'http://' + req.get('host') + " / callback";
+            const redirect_uri = 'http://' + req.get('host') + "/callback";
             let token = await controller.callback(redirect_uri, code.toString(), state?.toString());
             req.session.token = token ?? undefined;
-
             return handle(req, res);
         });
         server.get('/anime/', async (req, res) => {

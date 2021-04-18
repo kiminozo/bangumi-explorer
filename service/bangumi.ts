@@ -110,6 +110,8 @@ export async function accessToken(redirect_uri: string, code: string, state?: st
         redirect_uri, //"http://localhost:3000/callback",
         state
     };
+    console.log(data);
+
     try {
         const res = await axios.post<AccessToken>("https://bgm.tv/oauth/access_token", data);
         if (res.status === 200) {
