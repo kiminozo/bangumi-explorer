@@ -17,7 +17,10 @@
     "diff": "./node_modules/.bin/ts-node -- ./src/service/diff.ts"
   },
   "dependencies": {
+    "@types/superagent": "^4.1.10",
     "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.6",
+    "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "flexsearch": "^0.6.32",
     "lodash": "^4.17.21",
@@ -33,20 +36,20 @@
     "semantic-ui-react": "^2.0.3",
     "socket.io": "^4.0.1",
     "socket.io-client": "^4.0.1",
-    "cookie-parser": "^1.4.5"
+    "superagent": "^6.1.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.11",
     "@types/lodash": "^4.14.168",
+    "@types/lowdb": "^1.0.9",
     "@types/next": "^9.0.0",
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.3",
-    "@types/lowdb": "^1.0.9",
     "@types/socket.io": "^2.1.13",
     "@types/socket.io-client": "^1.4.36",
-    "@types/cookie-parser": "^1.4.2",
     "node-pre-gyp": "^0.17.0",
     "nodemon": "^2.0.7",
     "ts-node": "^9.1.1",

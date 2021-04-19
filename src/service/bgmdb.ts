@@ -24,7 +24,17 @@ export default class BangumiDB {
         this.db = await low(adapter);
     }
 
-    save(infoList: WatchInfo[]) {
+    save(userWatchInfo: UserWatchInfo) {
+        if (this.db === null) {
+            return null;
+        }
+        let query = { id: userWatchInfo.id }
+        const index = this.db.get('users').findIndex(query).value();
+        if (index < 0) {
+            this.db.get('users').push(userWatchInfo).write();
+        } else {
+            this.db.get('users').find(query).assign(userWatchInfo);
+        }
         // this.db.set('info', infoList).write();
     }
 
