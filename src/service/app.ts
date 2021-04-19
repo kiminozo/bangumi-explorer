@@ -1,7 +1,7 @@
 import express from "express";
 import session from 'express-session'
 import next from 'next'
-import { accessToken, AccessToken } from "./bangumi";
+import { AccessToken } from "../common/bangumi";
 import Controller from "./controller";
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -23,6 +23,40 @@ declare module 'express-session' {
         user: string;
     }
 }
+
+server.get('/anime/', async (req, res) => {
+    const items = await controller.load(undefined, req.session.user);
+    res.send({ items: items });
+});
+server.get('/anime/r=:range', async (req, res) => {
+    const range = req.params.range;
+    if (!range) {
+        res.send({ items: [] });
+        return;
+    }
+    //console.log("range:" + range);
+    const items = await controller.load(range, req.session.user);
+    res.send({ items: items });
+});
+server.get('/anime/:key', async (req, res) => {
+    const key = req.params.key;
+    if (!key) {
+        res.send({ items: [] });
+        return;
+    }
+    const items = await controller.search(key, req.session.user);
+    //console.log("Search:" + req.params.key);
+    res.send({ items: items });
+});
+server.get('/images/:id', async (req, res) => {
+    const id = req.params.id;
+    if (!id) {
+        res.status(404);
+        return;
+    }
+    res.sendFile(controller.getImagePath(id));
+})
+
 const controller = new Controller();
 async function run() {
     try {
@@ -41,40 +75,9 @@ async function run() {
             req.session.token = token ?? undefined;
             return handle(req, res);
         });
-        server.get('/anime/', async (req, res) => {
-            const items = await controller.load(undefined, req.session.user);
-            res.send({ items: items });
-        });
-        server.get('/anime/r=:range', async (req, res) => {
-            const range = req.params.range;
-            if (!range) {
-                res.send({ items: [] });
-                return;
-            }
-            //console.log("range:" + range);
-            const items = await controller.load(range, req.session.user);
-            res.send({ items: items });
-        });
-        server.get('/anime/:key', async (req, res) => {
-            const key = req.params.key;
-            if (!key) {
-                res.send({ items: [] });
-                return;
-            }
-            const items = await controller.search(key, req.session.user);
-            //console.log("Search:" + req.params.key);
-            res.send({ items: items });
-        });
-        server.get('/images/:id', async (req, res) => {
-            const id = req.params.id;
-            if (!id) {
-                res.status(404);
-                return;
-            }
-            res.sendFile(controller.getImagePath(id));
-        })
+
         server.get('*', (req, res) => {
-            req.session.user = "kiminozo";
+            //req.session.user = "kiminozo";
             // req.session.test = "Hello world 2020";
             return handle(req, res)
         });

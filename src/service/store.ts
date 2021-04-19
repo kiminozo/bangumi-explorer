@@ -1,9 +1,10 @@
-import { Item } from "./bangumi";
+import { Item } from "../common/bangumi";
 import fs from "fs";
 import Path from "path";
 import FlexSearch, { Index } from "flexsearch";
 //import jieba from 'nodejieba';
 import { Segment } from 'segment';
+import { StoreItem } from "../common/watch";
 
 const dataFileName = "data.json";
 const dev = process.env.NODE_ENV !== 'production'
@@ -27,13 +28,7 @@ const index = FlexSearch.create<StoreItem>({
     },
 });
 
-export interface StoreInfo extends Item {
-    path?: string;
-    disk?: string;
-    symbol?: string;
-}
 
-export type StoreItem = Item & StoreInfo;
 
 export function imagePath(id: string | number): string {
     return Path.resolve(dbPath, "images", id + ".jpg")

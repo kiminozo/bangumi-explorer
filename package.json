@@ -6,14 +6,15 @@
   "author": "kiminozo <kiminozoeien@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "NODE_ENV=production node build/service.js",
+    "start": "NODE_ENV=production node build/service/app.js",
+    "start:d": "node build/service/app.js",
     "build:server": "tsc --project tsconfig.server.json",
     "build:next": "next build",
     "build": "next build && tsc --project tsconfig.server.json",
-    "dev": "nodemon --exec ./node_modules/.bin/ts-node -- ./service/service.ts",
-    "test:store": "./node_modules/.bin/ts-node -- ./service/store.ts",
-    "test:db": "./node_modules/.bin/ts-node -- ./service/bgmdb.ts",
-    "diff": "./node_modules/.bin/ts-node -- ./service/diff.ts"
+    "dev": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/service/service.ts",
+    "test:store": "./node_modules/.bin/ts-node -- ./src/service/store.ts",
+    "test:db": "./node_modules/.bin/ts-node -- ./src/service/bgmdb.ts",
+    "diff": "./node_modules/.bin/ts-node -- ./src/service/diff.ts"
   },
   "dependencies": {
     "@types/lowdb": "^1.0.9",

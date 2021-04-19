@@ -1,28 +1,16 @@
-import * as fs from "fs"
-import Path = require('path');
-import low = require('lowdb');
-import FileSync = require('lowdb/adapters/FileSync')
-import FileAsync = require('lowdb/adapters/FileAsync')
+import Path from "path";
+import low from 'lowdb';
+import FileAsync from 'lowdb/adapters/FileAsync'
+import { WatchInfo, UserWatchInfo } from '../common/watch';
+
 
 const dev = process.env.NODE_ENV !== 'production'
 const dbPath = dev ? "output" : "database";
 
-export type WatchType = 'collect' | 'wish' | 'do' | 'on_hold' | 'dropped'
 
-export interface WatchInfo {
-    id: number;
-    title: string;
-    type: WatchType;
-}
-
-export interface UserInfo {
-    id: number;
-    name: string;
-    watchs: WatchInfo[];
-}
 
 export interface WatchDB {
-    users: UserInfo[];
+    users: UserWatchInfo[];
 }
 
 export default class BangumiDB {
@@ -46,7 +34,7 @@ export default class BangumiDB {
         }
         let query = typeof user === 'string' ? { name: user } : { id: user }
         const item = this.db.get("users").find(query)
-            .get('watchs').find({ id }).value();
+            .get('watches').find({ id }).value();
         return item;
     }
 
@@ -56,7 +44,7 @@ export default class BangumiDB {
         }
         let query = typeof user === 'string' ? { name: user } : { id: user }
         const items = this.db.get("users").find(query)
-            .get('watchs').value();
+            .get('watches').value();
         return items;
     }
 

@@ -1,14 +1,12 @@
 import { Index } from "flexsearch";
-import { AccessToken, accessToken } from "./bangumi";
-import { imagePath, importData, indexStore, StoreItem } from "./store";
+import { AccessToken } from "../common/bangumi";
+import { imagePath, importData, indexStore } from "./store";
 import Path from "path";
-import BangumiDB, { WatchInfo, WatchType } from "./bgmdb";
+import BangumiDB from "./bgmdb";
+import { BgmItem, StoreItem, UserItem } from "../common/watch";
+import { accessToken } from "./bgm-api";
 
-export interface UserItem {
-    watchType?: WatchType;
-}
 
-export type BgmItem = UserItem & StoreItem;
 
 function inRange(air_date: string, range?: string) {
     if (!range) {

@@ -7,7 +7,8 @@ import { Session } from 'next-session/dist/types';
 
 import 'semantic-ui-css/semantic.min.css'
 import { Grid, Segment, Header, Image, Icon, Container, Button } from 'semantic-ui-react';
-import { AccessToken, getUser } from '../service/bangumi';
+import { AccessToken } from '../common/bangumi';
+import { getUser } from '../service/bgm-api';
 
 interface SessionData {
     avatar: string;

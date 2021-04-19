@@ -23,9 +23,9 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 
 import 'semantic-ui-css/semantic.min.css'
-import { login_url, getUser, AccessToken } from "../service/bangumi";
-import { BgmItem } from '../service/controller';
-import { WatchType } from '../service/bgmdb';
+import { AccessToken } from "../common/bangumi";
+import { login_url, getUser } from "../service/bgm-api"
+import { BgmItem, WatchType } from '../common/watch';
 
 
 interface Result {
