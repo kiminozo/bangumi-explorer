@@ -12,7 +12,8 @@ import { getUser } from '../service/bgm-api'
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
     let avatar: string | null = null;
-    // console.log("token:" + req.session.token)
+    const userId = req.cookies.userId as string;
+    console.log("userId" + userId);
     // console.log("user:" + req.session.token?.user_id ?? "");
     // if (req.session.token && req.session.token.user_id) {
     //     const user = await getUser(req.session.token.user_id);
@@ -21,12 +22,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     // console.log("avatar:" + avatar)
 
     return {
-        props: { avatar }
+        props: { userId }
     };
 }
 
-const CallBackPage = (props: { avatar: string }) => {
-    const { avatar } = props;
+const CallBackPage = (props: { userId?: string }) => {
+    const { userId } = props;
     return (<>
         <Head>
             <title>解析数据</title>
@@ -37,14 +38,16 @@ const CallBackPage = (props: { avatar: string }) => {
                 <Grid.Row>
 
                 </Grid.Row>
-                <Grid.Row centered>
+                <Grid.Row centered columns={10}>
                     <Segment placeholder>
-                        {avatar ? (
+                        {userId ? (
                             <>
-                                <Image src={avatar} />
                                 <div>
-                                    授权登录成功
+                                    {userId}授权登录成功
                                 </div>
+                                <Link href="/">
+                                    <Button>同步数据</Button>
+                                </Link>
                             </>
                         )
                             :
