@@ -104,7 +104,7 @@ async function getInfo(user: string) {
         //console.log(info.dataList);
         //break;
     }
-    const dataList = dataListList.flat();
+    const watches = dataListList.flat();
     // for (const info of infoList) {
     //     console.log(info);
     // }
@@ -116,7 +116,7 @@ async function getInfo(user: string) {
 
     //db.defaults({ info: [], user: {} }).write();
     const db = new BangumiDB();
-    db.save(dataList);
+    db.save({ id: 1, name: user, watches });
 }
 
 getInfo("kiminozo");
