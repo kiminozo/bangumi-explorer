@@ -40,4 +40,4 @@ USER node
 VOLUME [ "/app/database" ]
 EXPOSE 3000
 ENV NODE_ENV=production
-CMD ["node", "build/service.js"]
+CMD ["node", "build/service/app.js"]
