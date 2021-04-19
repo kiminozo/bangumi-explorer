@@ -24,16 +24,16 @@ export default class BangumiDB {
         this.db = await low(adapter);
     }
 
-    save(userWatchInfo: UserWatchInfo) {
+    async save(userWatchInfo: UserWatchInfo) {
         if (this.db === null) {
             return null;
         }
         let query = { id: userWatchInfo.id }
         const index = this.db.get('users').findIndex(query).value();
         if (index < 0) {
-            this.db.get('users').push(userWatchInfo).write();
+            await this.db.get('users').push(userWatchInfo).write();
         } else {
-            this.db.get('users').find(query).assign(userWatchInfo);
+            await this.db.get('users').find(query).assign(userWatchInfo).write();
         }
         // this.db.set('info', infoList).write();
     }
