@@ -1,36 +1,24 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { applySession } from 'next-session';
-import { IncomingMessage, ServerResponse } from 'http';
-import { Session } from 'next-session/dist/types';
+import { GetServerSideProps } from 'next'
 
 import 'semantic-ui-css/semantic.min.css'
 import { Grid, Segment, Header, Image, Icon, Container, Button } from 'semantic-ui-react';
-import { AccessToken } from '../common/bangumi';
-import { getUser } from '../service/bgm-api';
+import { AccessToken } from '../common/bangumi'
+import { getUser } from '../service/bgm-api'
 
-interface SessionData {
-    avatar: string;
-    token: AccessToken;
-}
 
-interface SessionContext {
-    req: IncomingMessage & { session: Session & Partial<SessionData> };
-    res: ServerResponse;
-}
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
-export const getServerSideProps = async ({ req, res }: SessionContext) => {
-    await applySession(req, res);
-    req.session.views = req.session.views ? req.session.views + 1 : 1;
     let avatar: string | null = null;
-    console.log("token:" + req.session.token)
-    console.log("user:" + req.session.token?.user_id ?? "");
-    if (req.session.token && req.session.token.user_id) {
-        const user = await getUser(req.session.token.user_id);
-        avatar = user?.avatar.large ?? null;
-    }
-    console.log("avatar:" + avatar)
+    // console.log("token:" + req.session.token)
+    // console.log("user:" + req.session.token?.user_id ?? "");
+    // if (req.session.token && req.session.token.user_id) {
+    //     const user = await getUser(req.session.token.user_id);
+    //     avatar = user?.avatar.large ?? null;
+    // }
+    // console.log("avatar:" + avatar)
 
     return {
         props: { avatar }

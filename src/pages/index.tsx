@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { applySession } from 'next-session';
-import { GetStaticProps, GetStaticPaths, GetServerSideProps } from 'next'
-import { IncomingMessage, ServerResponse } from 'http';
+import { GetServerSideProps } from 'next'
 
-import { Session } from 'next-session/dist/types';
 import absoluteUrl from 'next-absolute-url'
 import _ from "lodash";
 
@@ -39,10 +36,7 @@ interface SessionData {
   token: AccessToken;
 }
 
-interface SessionContext {
-  req: IncomingMessage & { session: Session & Partial<SessionData> };
-  res: ServerResponse;
-}
+
 
 function quarter(date: Date): string {
   const year = date.getFullYear();
@@ -59,26 +53,24 @@ function quarter(date: Date): string {
   return year + "-10";
 }
 
-export const getServerSideProps = async ({ req, res }: SessionContext) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const { origin } = absoluteUrl(req);
-  await applySession(req, res);
-  req.session.views = req.session.views ? req.session.views + 1 : 1;
   let avatar: string | null = null;
-  console.log("token:" + req.session.token)
-  console.log("user:" + req.session.token?.user_id ?? "");
-  if (req.session.token && req.session.token.user_id) {
+  // console.log("token:" + req.session.token)
+  // console.log("user:" + req.session.token?.user_id ?? "");
+  // if (req.session.token && req.session.token.user_id) {
 
-    const user = await getUser(req.session.token.user_id);
-    avatar = user?.avatar.small ?? null;
-  }
-  console.log("avatar:" + avatar)
+  //   const user = await getUser(req.session.token.user_id);
+  //   avatar = user?.avatar.small ?? null;
+  // }
+  // console.log("avatar:" + avatar)
 
   return {
-    props: { domain: origin, views: req.session.views, avatar }
+    props: { domain: origin, avatar }
   };
 }
 
-const imageLable = (watchType?: WatchType): SemanticShorthandItem<LabelProps> => {
+const imageLabel = (watchType?: WatchType): SemanticShorthandItem<LabelProps> => {
   switch (watchType) {
     case 'collect':
       return { color: 'blue', corner: 'right', icon: 'check' };
@@ -121,7 +113,7 @@ const ItemsGroup = (props: { items: BgmItem[] }) => {
                 value.map(item => (
                   <Grid.Column>
                     <Image style={{ "overflow": "hidden" }} wrapped rounded src={`/images/${item.id}`} size='small'
-                      label={imageLable(item.watchType)}
+                      label={imageLabel(item.watchType)}
                     // label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
                     />
                     {/* <Header as="div" size="tiny"
