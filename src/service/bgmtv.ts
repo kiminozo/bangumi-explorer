@@ -5,7 +5,7 @@ import Path = require('path');
 import low = require('lowdb');
 import FileSync = require('lowdb/adapters/FileSync')
 import BangumiDB from './bgmdb'
-import { WatchInfo, WatchType } from '../common/watch';
+import { UserWatchInfo, WatchInfo, WatchType } from '../common/watch';
 import { Log } from '../common/message';
 
 const sumReduce = (pre: number, curr: number) => pre + curr;
@@ -73,7 +73,8 @@ function getWatchType(typeCN: string): WatchType {
     }
 }
 
-export async function parseUserWatchInfo(userId: number, userName: string, recent?: boolean, log?: Log) {
+export async function parseUserWatchInfo(userId: number, userName: string, recent?: boolean, log?: Log)
+    : Promise<UserWatchInfo> {
     const url = `http://bgm.tv/anime/list/${userId}`;
     console.log(url);
     let html = await agent(url);
@@ -110,8 +111,8 @@ export async function parseUserWatchInfo(userId: number, userName: string, recen
     for (const info of infoList) {
         const pageCount = getPageCount(info.count, recent);
         for (let page = 1; page < pageCount; page++) {
-            // const data = await getWatch(userId, info.type, page);
-            // dataListList.push(data);
+            const data = await getWatch(userId, info.type, page);
+            dataListList.push(data);
             progress++;
 
             if (log) {
@@ -123,30 +124,32 @@ export async function parseUserWatchInfo(userId: number, userName: string, recen
             }
             await sleep(200);
         }
+
     }
     const watches = dataListList.flat();
-    const db = new BangumiDB();
-    try {
-        //  await db.save({ id: userId, name: userName, watches });
-        console.log("db saved");
-        if (log) {
-            log({
-                type: "log",
-                percent: 100,
-                message: "保存数据",
-                complete: true
-            });
-        }
-    } catch (error) {
-        if (log) {
-            log({
-                type: "error",
-                percent: 100,
-                message: error.message,
-                complete: true
-            });
-        }
-    }
+    return { id: userId, name: userName, watches };
+    // const db = new BangumiDB();
+    // try {
+    //     await db.save({ id: userId, name: userName, watches });
+    //     console.log("db saved");
+    //     if (log) {
+    //         log({
+    //             type: "log",
+    //             percent: 100,
+    //             message: "保存数据",
+    //             complete: true
+    //         });
+    //     }
+    // } catch (error) {
+    //     if (log) {
+    //         log({
+    //             type: "error",
+    //             percent: 100,
+    //             message: error.message,
+    //             complete: true
+    //         });
+    //     }
+    // }
 
 }
 //parseUserWatchInfo("kiminozo");

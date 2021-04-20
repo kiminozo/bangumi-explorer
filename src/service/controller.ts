@@ -5,6 +5,9 @@ import Path from "path";
 import BangumiDB from "./bgmdb";
 import { BgmItem, StoreItem, UserItem } from "../common/watch";
 import { accessToken } from "./bgm-api";
+import { parseUserWatchInfo } from "./bgmtv";
+import { Socket } from "socket.io"
+import { LogMessage } from "../common/message";
 
 
 
@@ -67,5 +70,32 @@ export default class Controller {
 
     getImagePath(id: string): string {
         return Path.resolve(imagePath(id))
+    }
+
+    async doParseUserWatchInfo(socket: Socket, data: { userId: number }) {
+        console.log("receive:" + data);
+        const log = (message: LogMessage) => {
+            socket.emit('message', message);
+            console.debug("send message" + JSON.stringify(message))
+        }
+        const info = await parseUserWatchInfo(data.userId, "", true, log);
+        try {
+            await db.save(info);
+            console.log("db saved");
+
+            log({
+                type: "log",
+                percent: 100,
+                message: "保存数据",
+                complete: true
+            });
+        } catch (error) {
+            log({
+                type: "error",
+                percent: 100,
+                message: error.message,
+                complete: true
+            });
+        }
     }
 }

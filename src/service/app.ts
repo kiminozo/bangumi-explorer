@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser';
 
 import { AccessToken } from "../common/bangumi";
 import Controller from "./controller";
-import { doParseUserWatchInfo } from "./worker";
 
 const dev = process.env.NODE_ENV !== 'production'
 const secret = process.env.COOKIE_SECRET ?? "MZhjsZgzleZWiwYhPKwCsj5afQHiBFKd";
@@ -28,7 +27,7 @@ app.use(cookieParser(secret));
 io.of("test").on('connection', socket => {
     console.log('A user connected');
     socket.on('task:parse', (data: { userId: number }) => {
-        doParseUserWatchInfo(socket, data);
+        controller.doParseUserWatchInfo(socket, data);
     });
     socket.on('disconnect', () => {
         console.log('A user disconnected');
