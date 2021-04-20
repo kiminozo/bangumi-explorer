@@ -3,18 +3,33 @@ import Head from 'next/head'
 import Link from 'next/link'
 import client from "socket.io-client";
 
-import { Grid, Segment, Header, Image, Icon, Container, Button }
+import { Grid, Segment, Progress, Container, Button, List }
     from 'semantic-ui-react';
+import _ from "lodash";
 
 import 'semantic-ui-css/semantic.min.css'
+import { WorkerMessage } from '../common/message';
+
+const LogList = ({ messages }: { messages: WorkerMessage[] }) => (
+    <List ordered divided relaxed>
+        {messages.map(({ message }) => (
+            <List.Item>{message}</List.Item>
+        ))}
+    </List>
+)
+
+const messageList: WorkerMessage[] = [];
 
 const Home = () => {
-    const [response, setResponse] = useState("");
-    const socket = client("/test");
+    const [messages, setMessages] = useState(messageList);
+    const [percent, setPercent] = useState(0);
 
     useEffect(() => {
-        socket.on("message", (data: string) => {
-            setResponse(data);
+        const socket = client("/test");
+        socket.on("message", (data: WorkerMessage) => {
+            setPercent(data.percent);
+            messageList.push(data);
+            setMessages(messageList)
         })
         socket.emit("message", "hello service");
     }, [])
@@ -26,11 +41,17 @@ const Home = () => {
             <Container>
                 <Grid>
                     <Grid.Row>
+
                     </Grid.Row>
-                    <Grid.Row centered columns={10}>
-                        <Segment placeholder>
-                            {response}
-                        </Segment>
+                    <Grid.Row centered>
+                        <Grid.Column width={10}>
+                            <Progress percent={percent} progress indicating />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row centered >
+                        <Grid.Column width={10}>
+                            <LogList messages={messages} />
+                        </Grid.Column>
                     </Grid.Row>
                 </Grid>
             </Container>

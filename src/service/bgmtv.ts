@@ -11,7 +11,6 @@ function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-
 function agent(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
         superagent.get(url)

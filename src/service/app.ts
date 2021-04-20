@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 
 import { AccessToken } from "../common/bangumi";
 import Controller from "./controller";
+import { testRun } from "./worker";
 
 const dev = process.env.NODE_ENV !== 'production'
 const secret = process.env.COOKIE_SECRET ?? "MZhjsZgzleZWiwYhPKwCsj5afQHiBFKd";
@@ -27,8 +28,9 @@ app.use(cookieParser(secret));
 io.of("test").on('connection', socket => {
     console.log('A user connected');
     socket.on('message', (data: string) => {
-        console.log("receive:" + data);
-        socket.emit('message', "I got it");
+        testRun(socket, data);
+
+
     });
     socket.on('disconnect', () => {
         console.log('A user disconnected');
