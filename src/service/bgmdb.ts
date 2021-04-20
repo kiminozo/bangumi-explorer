@@ -25,6 +25,7 @@ export default class BangumiDB {
     }
 
     async save(userWatchInfo: UserWatchInfo) {
+
         if (this.db === null) {
             return null;
         }

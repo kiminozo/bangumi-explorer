@@ -8,17 +8,17 @@ import { Grid, Segment, Progress, Container, Button, List }
 import _ from "lodash";
 
 import 'semantic-ui-css/semantic.min.css'
-import { WorkerMessage } from '../common/message';
+import { LogMessage } from '../common/message';
 
-const LogList = ({ messages }: { messages: WorkerMessage[] }) => (
-    <List ordered divided relaxed>
-        {messages.map(({ message }) => (
-            <List.Item>{message}</List.Item>
+const LogList = ({ messages }: { messages: LogMessage[] }) => (
+    <List divided relaxed as="ol">
+        {messages.map(({ message }, index) => (
+            <List.Item as="li" key={index}>{message}</List.Item>
         ))}
     </List>
 )
 
-const messageList: WorkerMessage[] = [];
+const messageList: LogMessage[] = [];
 
 const Home = () => {
     const [messages, setMessages] = useState(messageList);
@@ -26,12 +26,13 @@ const Home = () => {
 
     useEffect(() => {
         const socket = client("/test");
-        socket.on("message", (data: WorkerMessage) => {
-            setPercent(data.percent);
+        socket.on("message", (data: LogMessage) => {
+            console.log("rec:" + JSON.stringify(data));
             messageList.push(data);
+            setPercent(data.percent);
             setMessages(messageList)
         })
-        socket.emit("message", "hello service");
+        socket.emit("task:parse", { userId: 10747 });
     }, [])
     return (
         <>

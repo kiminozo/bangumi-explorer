@@ -6,6 +6,14 @@ import low = require('lowdb');
 import FileSync = require('lowdb/adapters/FileSync')
 import BangumiDB from './bgmdb'
 import { WatchInfo, WatchType } from '../common/watch';
+import { Log } from '../common/message';
+
+const sumReduce = (pre: number, curr: number) => pre + curr;
+const getPageCount = (count: number, recent?: boolean) => {
+    const maxPage = recent ? 3 : Number.MAX_VALUE;
+    return Math.min(count / 24 + 1, maxPage)
+}
+const percentOf = (current: number, sum: number) => Math.ceil(current * 100 / sum);
 
 function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -25,10 +33,7 @@ function agent(url: string): Promise<string> {
 }
 
 
-
-
-
-async function getWatch(user: string, type: WatchType, page: number): Promise<WatchInfo[]> {
+async function getWatch(user: string | number, type: WatchType, page: number): Promise<WatchInfo[]> {
     const url = `http://bgm.tv/anime/list/${user}/${type}?page=${page}`;
     console.log(url);
     let html = await agent(url);
@@ -49,7 +54,6 @@ async function getWatch(user: string, type: WatchType, page: number): Promise<Wa
     });
     //console.debug(dataList.length);
     //$("",item)
-    await sleep(50);
     return dataList;
 }
 const regex = /(\S+)\s{1}\((\d+)\)/;
@@ -69,8 +73,8 @@ function getWatchType(typeCN: string): WatchType {
     }
 }
 
-async function getInfo(user: string) {
-    const url = `http://bgm.tv/anime/list/${user}`;
+export async function parseUserWatchInfo(userId: number, userName: string, recent?: boolean, log?: Log) {
+    const url = `http://bgm.tv/anime/list/${userId}`;
     console.log(url);
     let html = await agent(url);
     const $ = cheerio.load(html);
@@ -91,34 +95,61 @@ async function getInfo(user: string) {
         }
         // console.log(info);
     });
+    if (log) {
+        log({
+            type: "log",
+            percent: 1,
+            message: JSON.stringify(infoList)
+        });
+    }
+
     const dataListList: WatchInfo[][] = [];
 
+    let progress = 0;
+    const sum = infoList.map(p => getPageCount(p.count, recent)).reduce(sumReduce)
     for (const info of infoList) {
-        const pageCount = info.count / 24 + 1;
+        const pageCount = getPageCount(info.count, recent);
         for (let page = 1; page < pageCount; page++) {
-            const data = await getWatch(user, info.type, page);
-            dataListList.push(data);
-        }
+            // const data = await getWatch(userId, info.type, page);
+            // dataListList.push(data);
+            progress++;
 
-        //console.log(info.dataList);
-        //break;
+            if (log) {
+                log({
+                    type: "log",
+                    percent: percentOf(progress, sum),
+                    message: `正在更新${info.type}: 第${page}页`
+                });
+            }
+            await sleep(200);
+        }
     }
     const watches = dataListList.flat();
-    // for (const info of infoList) {
-    //     console.log(info);
-    // }
-
-    //const userInfo: UserWatchInfo = { user, info: dataList };
-    // await fs.promises.writeFile(Path.join("output", `user-${user}.json`),
-    //     JSON.stringify(userInfo, null, 1));
-
-
-    //db.defaults({ info: [], user: {} }).write();
     const db = new BangumiDB();
-    db.save({ id: 1, name: user, watches });
-}
+    try {
+        //  await db.save({ id: userId, name: userName, watches });
+        console.log("db saved");
+        if (log) {
+            log({
+                type: "log",
+                percent: 100,
+                message: "保存数据",
+                complete: true
+            });
+        }
+    } catch (error) {
+        if (log) {
+            log({
+                type: "error",
+                percent: 100,
+                message: error.message,
+                complete: true
+            });
+        }
+    }
 
-getInfo("kiminozo");
+}
+//parseUserWatchInfo("kiminozo");
 
 
 
