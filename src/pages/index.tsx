@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -7,8 +7,8 @@ import absoluteUrl from 'next-absolute-url'
 import _ from "lodash";
 
 import {
-  Grid, Input, Item, Container, Icon,
-  Divider, Image, Label, Header, Rating, Button,
+  Grid, Input, Container, Icon,
+  Divider, Image, Header, Button,
   SemanticShorthandItem, LabelProps
 } from 'semantic-ui-react';
 
@@ -155,6 +155,7 @@ interface Props {
 }
 
 const Home = (props: Props) => {
+
   const { domain, avatar } = props;
   const [items, setItems] = useState<BgmItem[]>([]);
   const [query, setQuery] = useState<string>("");

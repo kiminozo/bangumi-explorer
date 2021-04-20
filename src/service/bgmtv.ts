@@ -1,5 +1,5 @@
-import superagent = require('superagent');
-import cheerio = require('cheerio');
+import superagent from 'superagent';
+import cheerio from 'cheerio';
 import { UserWatchInfo, WatchInfo, WatchType } from '../common/watch';
 import { Log } from '../common/message';
 
