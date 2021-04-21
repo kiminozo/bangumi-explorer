@@ -1,10 +1,5 @@
-import superagent = require('superagent');
-import cheerio = require('cheerio');
-import * as fs from "fs"
-import Path = require('path');
-import low = require('lowdb');
-import FileSync = require('lowdb/adapters/FileSync')
-import BangumiDB from './bgmdb'
+import superagent from 'superagent';
+import cheerio from 'cheerio';
 import { UserWatchInfo, WatchInfo, WatchType } from '../common/watch';
 import { Log } from '../common/message';
 
