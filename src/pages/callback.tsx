@@ -45,7 +45,7 @@ const CallBackPage = (props: { userId?: string }) => {
                                 <div>
                                     {userId}授权登录成功
                                 </div>
-                                <Link href="/">
+                                <Link href="/sync">
                                     <Button>同步数据</Button>
                                 </Link>
                             </>

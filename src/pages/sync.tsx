@@ -2,18 +2,28 @@ import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import client from "socket.io-client";
-
+import { GetServerSideProps } from "next";
 import {
     Icon, Progress, Container, Button, List,
     Segment, ButtonGroup, Label, Popup
 } from 'semantic-ui-react';
-import _ from "lodash";
 
 import 'semantic-ui-css/semantic.min.css'
 import { LogMessage } from '../common/message';
 
 
 //const messageList: LogMessage[] = [];
+
+// export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+//     const userId = req.cookies.userId ?? 10747;
+//     return {
+//         props: { userId }
+//     };
+// }
+
+// interface Props {
+//     userId: string;
+// }
 
 const Sync = () => {
     const [messages, setMessages] = useState<LogMessage[]>([]);
@@ -36,9 +46,9 @@ const Sync = () => {
             }
         })
         if (fast) {
-            socket.emit("task:sync-fast", { userId: 10747 });
+            socket.emit("task:sync-fast");
         } else {
-            socket.emit("task:sync", { userId: 10747 });
+            socket.emit("task:sync");
         }
     }
     // useEffect(() => {

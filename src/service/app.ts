@@ -2,9 +2,9 @@ import express from "express";
 import next from 'next'
 import { Server } from "socket.io"
 import { createServer } from 'http';
+import cookie from "cookie";
 import cookieParser from 'cookie-parser';
 
-import { AccessToken } from "../common/bangumi";
 import Controller from "./controller";
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -26,13 +26,21 @@ app.use(cookieParser(secret));
 
 io.of("sync").on('connection', socket => {
     console.log('A user connected');
-    socket.on('task:sync-fast', (data: { userId: number }) => {
-        console.log('task:sync-fast');
-        controller.doParseUserWatchInfo(socket, data, true);
+
+    const cookies = cookie.parse(socket.handshake.headers.cookie ?? "");
+    const userId = parseInt(cookies['userId']);
+    console.log("cookie:" + socket.handshake.headers.cookie);
+    socket.on('task:sync-fast', () => {
+        console.log('task:sync-fast u:' + userId);
+        if (userId) {
+            controller.doParseUserWatchInfo(socket, { userId }, true);
+        }
     });
-    socket.on('task:sync', (data: { userId: number }) => {
-        console.log('task:sync');
-        controller.doParseUserWatchInfo(socket, data, false);
+    socket.on('task:sync', () => {
+        console.log('task:sync u:' + userId);
+        if (userId) {
+            controller.doParseUserWatchInfo(socket, { userId }, false);
+        }
     });
     socket.on('task:cancel', (data: { userId: number }) => {
         console.log('task:cancel');
@@ -89,6 +97,7 @@ app.get('/callback', async (req, res) => {
     let token = await controller.callback(redirect_uri, code.toString(), state?.toString());
     res.cookie("userId", token?.user_id);
     res.cookie("token", token, { signed: true });
+    req.cookies.userId = token?.user_id
     await handle(req, res);
 });
 
