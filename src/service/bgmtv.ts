@@ -95,7 +95,7 @@ export async function parseUserWatchInfo(userId: number, userName: string, recen
         log({
             type: "log",
             percent: 1,
-            message: JSON.stringify(infoList)
+            message: "获取账号信息"
         });
     }
 
@@ -105,7 +105,7 @@ export async function parseUserWatchInfo(userId: number, userName: string, recen
     const sum = infoList.map(p => getPageCount(p.count, recent)).reduce(sumReduce)
     for (const info of infoList) {
         const pageCount = getPageCount(info.count, recent);
-        for (let page = 1; page < pageCount; page++) {
+        for (let page = 1; page <= pageCount; page++) {
             const data = await getWatch(userId, info.type, page);
             dataListList.push(data);
             progress++;

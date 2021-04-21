@@ -5,7 +5,7 @@ import client from "socket.io-client";
 
 import {
     Grid, Icon, Progress, Container, Button, List,
-    Segment, ButtonGroup, Label
+    Segment, ButtonGroup, Label, Popup
 } from 'semantic-ui-react';
 import _ from "lodash";
 
@@ -66,14 +66,18 @@ const Home = () => {
                 <Segment.Group>
                     <Segment>
                         <Progress percent={percent} progress indicating success={success} />
-                        <ButtonGroup compact size='small'
+                        <ButtonGroup compact
                             floated='right'>
-                            <Button icon onClick={() => syncEvent(true)}>
-                                <Icon name='sync' />
-                            </Button>
-                            <Button icon onClick={() => syncEvent(false)}>
-                                <Icon name='download' />
-                            </Button>
+                            <Popup content='快速同步' trigger={
+                                <Button icon onClick={() => syncEvent(true)}>
+                                    <Icon name='sync' />
+                                </Button>
+                            } />
+                            <Popup content='完整同步' trigger={
+                                <Button icon onClick={() => syncEvent(false)}>
+                                    <Icon name='download' />
+                                </Button>
+                            } />
                         </ButtonGroup>
                                      Event Log <Label circular>{messages.length}</Label>
                     </Segment>

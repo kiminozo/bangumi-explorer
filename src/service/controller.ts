@@ -1,4 +1,3 @@
-import { Index } from "flexsearch";
 import { AccessToken } from "../common/bangumi";
 import { imagePath, importData, indexStore } from "./store";
 import Path from "path";
