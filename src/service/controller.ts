@@ -72,14 +72,14 @@ export default class Controller {
         return Path.resolve(imagePath(id))
     }
 
-    async doParseUserWatchInfo(socket: Socket, data: { userId: number }) {
+    async doParseUserWatchInfo(socket: Socket, data: { userId: number }, recent: boolean) {
         console.log("receive:" + data);
         const log = (message: LogMessage) => {
             socket.emit('message', message);
             console.debug("send message" + JSON.stringify(message))
         }
-        const info = await parseUserWatchInfo(data.userId, "", true, log);
         try {
+            const info = await parseUserWatchInfo(data.userId, "", recent, log);
             await db.save(info);
             console.log("db saved");
 
@@ -90,6 +90,7 @@ export default class Controller {
                 complete: true
             });
         } catch (error) {
+            console.error(error);
             log({
                 type: "error",
                 percent: 100,

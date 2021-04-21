@@ -24,10 +24,18 @@ const controller = new Controller();
 
 app.use(cookieParser(secret));
 
-io.of("test").on('connection', socket => {
+io.of("sync").on('connection', socket => {
     console.log('A user connected');
-    socket.on('task:parse', (data: { userId: number }) => {
-        controller.doParseUserWatchInfo(socket, data);
+    socket.on('task:sync-fast', (data: { userId: number }) => {
+        console.log('task:sync-fast');
+        controller.doParseUserWatchInfo(socket, data, true);
+    });
+    socket.on('task:sync', (data: { userId: number }) => {
+        console.log('task:sync');
+        controller.doParseUserWatchInfo(socket, data, false);
+    });
+    socket.on('task:cancel', (data: { userId: number }) => {
+        console.log('task:cancel');
     });
     socket.on('disconnect', () => {
         console.log('A user disconnected');
