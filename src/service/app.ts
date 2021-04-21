@@ -42,7 +42,7 @@ io.of("sync").on('connection', socket => {
             controller.doParseUserWatchInfo(socket, { userId }, false);
         }
     });
-    socket.on('task:cancel', (data: { userId: number }) => {
+    socket.on('task:cancel', () => {
         console.log('task:cancel');
     });
     socket.on('disconnect', () => {
@@ -54,7 +54,8 @@ io.attach(server);
 
 
 app.get('/anime/', async (req, res) => {
-    const items = await controller.load(undefined, req.cookies.userId);
+    const userId = parseInt(req.cookies.userId);
+    const items = await controller.load(undefined, userId);
     res.send({ items: items });
 });
 app.get('/anime/r=:range', async (req, res) => {
@@ -63,8 +64,10 @@ app.get('/anime/r=:range', async (req, res) => {
         res.send({ items: [] });
         return;
     }
-    //console.log("range:" + range);
-    const items = await controller.load(range, req.cookies.userId);
+    console.log("range:" + range);
+    const userId = parseInt(req.cookies.userId);
+    console.log("userId:" + userId);
+    const items = await controller.load(range, userId);
     res.send({ items: items });
 });
 app.get('/anime/:key', async (req, res) => {
@@ -73,7 +76,8 @@ app.get('/anime/:key', async (req, res) => {
         res.send({ items: [] });
         return;
     }
-    const items = await controller.search(key, req.cookies.userId);
+    const userId = parseInt(req.cookies.userId);
+    const items = await controller.search(key, userId);
     //console.log("Search:" + req.params.key);
     res.send({ items: items });
 });
