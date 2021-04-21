@@ -4,7 +4,7 @@ import Link from 'next/link'
 import client from "socket.io-client";
 
 import {
-    Grid, Icon, Progress, Container, Button, List,
+    Icon, Progress, Container, Button, List,
     Segment, ButtonGroup, Label, Popup
 } from 'semantic-ui-react';
 import _ from "lodash";
@@ -12,30 +12,24 @@ import _ from "lodash";
 import 'semantic-ui-css/semantic.min.css'
 import { LogMessage } from '../common/message';
 
-const LogList = ({ messages }: { messages: LogMessage[] }) => (
-    <List divided relaxed as="ol">
-        {messages.map(({ message }, index) => (
-            <List.Item as="li" key={index}>{message}</List.Item>
-        ))}
-    </List>
-)
 
-const messageList: LogMessage[] = [];
+//const messageList: LogMessage[] = [];
 
-
-
-const Home = () => {
-    const [messages, setMessages] = useState(messageList);
+const Sync = () => {
+    const [messages, setMessages] = useState<LogMessage[]>([]);
     const [percent, setPercent] = useState(0);
     const [success, setSuccess] = useState(false);
 
     const syncEvent = (fast: boolean) => {
         const socket = client("/sync");
+
+        messages.splice(0, messages.length);
+        setMessages(messages);
         socket.on("message", (data: LogMessage) => {
             console.log("rec:" + JSON.stringify(data));
-            messageList.push(data);
+            messages.push(data);
             setPercent(data.percent);
-            setMessages(messageList);
+            setMessages(messages);
             if (data.complete) {
                 setSuccess(true);
                 socket.disconnect();
@@ -83,9 +77,11 @@ const Home = () => {
                     </Segment>
                     <Segment secondary>
                         <pre>
-                            {messages.map(({ message }, i) => (
-                                <div key={i}>{message}</div>
-                            ))}
+                            <ol>
+                                {messages.map(({ message }, i) => (
+                                    <li key={i}>{message}</li>
+                                ))}
+                            </ol>
                         </pre>
                     </Segment>
                 </Segment.Group>
@@ -94,4 +90,4 @@ const Home = () => {
     )
 }
 
-export default Home;
+export default Sync;
