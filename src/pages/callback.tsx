@@ -4,23 +4,13 @@ import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 
 import 'semantic-ui-css/semantic.min.css'
-import { Grid, Segment, Header, Image, Icon, Container, Button } from 'semantic-ui-react';
-import { AccessToken } from '../common/bangumi'
-import { getUser } from '../service/bgm-api'
+import { Grid, Segment, Container, Button } from 'semantic-ui-react';
+
 
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-
-    let avatar: string | null = null;
     const userId = req.cookies.userId as string;
     console.log("userId" + userId);
-    // console.log("user:" + req.session.token?.user_id ?? "");
-    // if (req.session.token && req.session.token.user_id) {
-    //     const user = await getUser(req.session.token.user_id);
-    //     avatar = user?.avatar.large ?? null;
-    // }
-    // console.log("avatar:" + avatar)
-
     return {
         props: { userId }
     };
