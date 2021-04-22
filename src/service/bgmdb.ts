@@ -31,7 +31,7 @@ export default class BangumiDB {
     }
 
     async save(userWatchInfo: UserWatchInfo) {
-        await fs.promises.writeFile(Path.join("output", "down-watch-data.json"), JSON.stringify(userWatchInfo, null, 1));
+        //   await fs.promises.writeFile(Path.join("output", "down-watch-data.json"), JSON.stringify(userWatchInfo, null, 1));
 
         if (this.db === null) {
             console.log("db === null");
