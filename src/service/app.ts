@@ -97,7 +97,7 @@ app.get('/callback', async (req, res, nextPage) => {
         res.status(404);
         return;
     }
-    const baseUrl = req.protocol + '//' + req.get('host');
+    const baseUrl = req.protocol + '://' + req.get('host');
     const redirect_uri = baseUrl + "/callback";
     console.log("redirect_uri:" + redirect_uri);
     let token = await controller.callback(redirect_uri, code.toString(), state?.toString());

@@ -189,7 +189,7 @@ const Home = () => {
             <Grid.Column width={3} >
 
               {
-                false ?
+                searchResult.uid ?
                   (
                     <Button basic icon labelPosition='left' color='teal'
                       onClick={() => setOpen(true)}>
