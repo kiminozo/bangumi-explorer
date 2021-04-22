@@ -36,7 +36,7 @@ export default class BangumiDB {
             return null;
         }
         let query = { id: userWatchInfo.id }
-        const userCount = this.db.get('users').size().value();
+        // const userCount = this.db.get('users').size().value();
         const index = this.db.get('users').findIndex(query).value();
         console.log("user-index:" + index);
         if (index < 0) {
@@ -91,3 +91,15 @@ export default class BangumiDB {
 // console.log(db.get(183957));
 //test();
 
+// async function test() {
+//     const db = new BangumiDB();
+//     await db.prepare();
+//     const info: UserWatchInfo = { id: 10747, name: "", watches: [] };
+//     info.watches.push({
+//         id: 262899,
+//         title: "电影 摇曳露营△",
+//         type: "wish"
+//     });
+//     await db.save(info)
+// }
+// test();

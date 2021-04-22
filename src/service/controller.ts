@@ -2,7 +2,7 @@ import { AccessToken } from "../common/bangumi";
 import { imagePath, importData, indexStore } from "./store";
 import Path from "path";
 import BangumiDB from "./bgmdb";
-import { BgmItem, StoreItem, UserItem } from "../common/watch";
+import { BgmItem, SearchResult, StoreItem, UserItem } from "../common/watch";
 import { accessToken } from "./bgm-api";
 import { parseUserWatchInfo } from "./bgmtv";
 import { Socket } from "socket.io"
@@ -53,18 +53,24 @@ export default class Controller {
         return await accessToken(redirect_uri, code, state);
     }
 
-    async load(range?: string, user?: number | string): Promise<BgmItem[]> {
-        return index.where(item => inRange(item.air_date, range))
-            .map(item => this.watchState(item, user));
+    async load(range?: string, uid?: number): Promise<SearchResult> {
+        return {
+            uid,
+            items: index.where(item => inRange(item.air_date, range))
+                .map(item => this.watchState(item, uid))
+        }
     }
 
-    async search(key: string, user?: number | string): Promise<BgmItem[]> {
+    async search(key: string, uid?: number): Promise<SearchResult> {
         const res = await index.search(key, {
             field: ["name_cn", "name"],
             bool: 'or',
             limit: 12
         });
-        return res.map(item => this.watchState(item, user));
+        return {
+            uid,
+            items: res.map(item => this.watchState(item, uid))
+        }
     }
 
     getImagePath(id: string): string {

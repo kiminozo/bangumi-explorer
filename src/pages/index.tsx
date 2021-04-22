@@ -9,7 +9,8 @@ import _ from "lodash";
 import {
   Grid, Input, Container, Icon,
   Divider, Image, Header, Button,
-  SemanticShorthandItem, LabelProps
+  SemanticShorthandItem, LabelProps,
+  Popup
 } from 'semantic-ui-react';
 
 import {
@@ -22,12 +23,10 @@ import 'moment/locale/zh-cn';
 import 'semantic-ui-css/semantic.min.css'
 import { AccessToken } from "../common/bangumi";
 import { login_url, getUser } from "../service/bgm-api"
-import { BgmItem, WatchType } from '../common/watch';
+import { BgmItem, WatchType, SearchResult } from '../common/watch';
 
 
-interface Result {
-  items: BgmItem[]
-}
+
 
 
 interface SessionData {
@@ -143,21 +142,18 @@ const ItemsGroup = (props: { items: BgmItem[] }) => {
 
 const loadItems = async (url: string) => {
   const response = await fetch(url);
-  const data: Result = await response.json();
-  const newItems = data.items;
-  return newItems ?? [];
+  const data: SearchResult = await response.json();
+  return data;
 }
 
 interface Props {
   domain: string;
-  views: number;
-  avatar?: string
 }
 
 const Home = (props: Props) => {
 
-  const { domain, avatar } = props;
-  const [items, setItems] = useState<BgmItem[]>([]);
+  const { domain } = props;
+  const [searchResult, setSearchResult] = useState<SearchResult>({ items: [] });
   const [query, setQuery] = useState<string>("");
   const [monthRange, setMonthRange] = useState<string>(defaultRange());
 
@@ -173,8 +169,8 @@ const Home = (props: Props) => {
     } else {
       url = "/anime/"
     }
-    const newItems = await loadItems(url);
-    setItems(newItems)
+    const result = await loadItems(url);
+    setSearchResult(result)
   }
 
   useEffect(() => { loadFn() }, [query, monthRange]);
@@ -209,9 +205,13 @@ const Home = (props: Props) => {
             </Grid.Column>
             <Grid.Column width={2} >
               {
-                avatar ?
+                searchResult.uid ?
                   (
-                    <Image src={avatar} />
+                    <Popup content='快速同步' trigger={
+                      <Button icon >
+                        <Icon name='sync' />
+                      </Button>
+                    } />
                   ) : (
                     <Link href={login_url(`${domain}/callback`)}>
                       <Button>
@@ -224,7 +224,7 @@ const Home = (props: Props) => {
           </Grid.Row>
 
           <Grid.Row>
-            <ItemsGroup items={items} />
+            <ItemsGroup items={searchResult.items} />
           </Grid.Row>
         </Grid >
       </Container>

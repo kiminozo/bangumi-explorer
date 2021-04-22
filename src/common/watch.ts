@@ -27,3 +27,8 @@ export interface StoreInfo {
 export type StoreItem = Item & StoreInfo;
 
 export type BgmItem = UserItem & StoreItem;
+
+export interface SearchResult {
+    uid?: number
+    items: BgmItem[]
+}

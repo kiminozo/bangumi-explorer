@@ -54,9 +54,9 @@ io.attach(server);
 
 
 app.get('/anime/', async (req, res) => {
-    const userId = parseInt(req.cookies.userId);
-    const items = await controller.load(undefined, userId);
-    res.send({ items: items });
+    const uid = parseInt(req.cookies.userId);
+    const result = await controller.load(undefined, uid);
+    res.send(result);
 });
 app.get('/anime/r=:range', async (req, res) => {
     const range = req.params.range;
@@ -65,10 +65,10 @@ app.get('/anime/r=:range', async (req, res) => {
         return;
     }
     console.log("range:" + range);
-    const userId = parseInt(req.cookies.userId);
-    console.log("userId:" + userId);
-    const items = await controller.load(range, userId);
-    res.send({ items: items });
+    const uid = parseInt(req.cookies.userId);
+    console.log("uid:" + uid);
+    const result = await controller.load(range, uid);
+    res.send(result);
 });
 app.get('/anime/:key', async (req, res) => {
     const key = req.params.key;
@@ -76,10 +76,10 @@ app.get('/anime/:key', async (req, res) => {
         res.send({ items: [] });
         return;
     }
-    const userId = parseInt(req.cookies.userId);
-    const items = await controller.search(key, userId);
+    const uid = parseInt(req.cookies.userId);
+    const result = await controller.search(key, uid);
     //console.log("Search:" + req.params.key);
-    res.send({ items: items });
+    res.send(result);
 });
 app.get('/images/:id', async (req, res) => {
     const id = req.params.id;
