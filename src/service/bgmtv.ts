@@ -14,7 +14,7 @@ function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function agent(url: string): Promise<string> {
+function agent(url: string): Promise<{ html: string, redirect: string }> {
     return new Promise((resolve, reject) => {
         superagent.get(url)
             .end((err, docs) => {
@@ -22,16 +22,20 @@ function agent(url: string): Promise<string> {
                     return reject(err);
                 }
                 // 成功解析
-                resolve(docs.text);
+                //console.log(docs.redirects);
+                resolve({
+                    html: docs.text,
+                    redirect: docs.redirects.length === 0 ? url : docs.redirects[0]
+                });
             })
     })
 }
 
 
-async function getWatch(user: string | number, type: WatchType, page: number): Promise<WatchInfo[]> {
-    const url = `http://bgm.tv/anime/list/${user}/${type}?page=${page}`;
+async function getWatch(urlBase: string, type: WatchType, page: number): Promise<WatchInfo[]> {
+    const url = `${urlBase}/${type}?page=${page}`;
     console.log(url);
-    let html = await agent(url);
+    const { html } = await agent(url);
     const subStart = '/subject/'.length;
     const $ = cheerio.load(html);
     const dataList: WatchInfo[] = [];
@@ -72,7 +76,7 @@ export async function parseUserWatchInfo(userId: number, userName: string, recen
     : Promise<UserWatchInfo> {
     const url = `http://bgm.tv/anime/list/${userId}`;
     console.log(url);
-    let html = await agent(url);
+    const { html, redirect } = await agent(url);
     const $ = cheerio.load(html);
     const infoList: { type: WatchType, count: number }[] = [];
     $("ul.navSubTabs li a span").each((_index, ele) => {
@@ -106,7 +110,7 @@ export async function parseUserWatchInfo(userId: number, userName: string, recen
     for (const info of infoList) {
         const pageCount = getPageCount(info.count, recent);
         for (let page = 1; page <= pageCount; page++) {
-            const data = await getWatch(userId, info.type, page);
+            const data = await getWatch(redirect, info.type, page);
             dataListList.push(data);
             progress++;
 
@@ -156,3 +160,5 @@ export async function parseUserWatchInfo(userId: number, userName: string, recen
 //     .get('dataList')
 //     .value()
 // console.log(info2);
+
+//agent(`http://bgm.tv/anime/list/10747`)

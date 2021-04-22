@@ -1,16 +1,11 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
-import Link from 'next/link'
-import { GetServerSideProps } from 'next'
-
-import absoluteUrl from 'next-absolute-url'
 import _ from "lodash";
 
 import {
   Grid, Input, Container, Icon,
   Divider, Image, Header, Button,
   SemanticShorthandItem, LabelProps,
-  Popup, Modal, Progress
 } from 'semantic-ui-react';
 
 import {
@@ -21,21 +16,13 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 
 import 'semantic-ui-css/semantic.min.css'
-import { AccessToken } from "../common/bangumi";
-import { login_url, getUser } from "../service/bgm-api"
+import { login_url } from "../common/bangumi";
 import { BgmItem, WatchType, SearchResult } from '../common/watch';
-import Sync from './sync'
 import SyncDialog from '../widget/SyncDialog'
 
 
 
 
-
-interface SessionData {
-  views: number;
-  test: string;
-  token: AccessToken;
-}
 
 
 

@@ -1,19 +1,7 @@
 import axios from 'axios';
-import { AccessToken, User } from '../common/bangumi';
+import { AccessToken, User, appId } from '../common/bangumi';
 
-const appId = "bgm12835d9fe466616a5";
 const appSecret = "f8ff78be428a0642fd0008649394d963";
-
-export function login_url(redirect_uri: string) {
-    const url = new URL('https://bgm.tv/oauth/authorize');
-    const params = url.searchParams;
-
-    params.append("client_id", appId);
-    params.append("response_type", "code");
-    params.append("redirect_uri", redirect_uri);
-    params.append("state", Math.random().toString())
-    return url.toString();
-}
 
 const baseUrl = "https://api.bgm.tv/";
 

@@ -2,6 +2,7 @@ import Path from "path";
 import low from 'lowdb';
 import FileAsync from 'lowdb/adapters/FileAsync'
 import { WatchInfo, UserWatchInfo } from '../common/watch';
+import * as fs from "fs"
 
 
 const dev = process.env.NODE_ENV !== 'production'
@@ -30,6 +31,7 @@ export default class BangumiDB {
     }
 
     async save(userWatchInfo: UserWatchInfo) {
+        await fs.promises.writeFile(Path.join("output", "down-watch-data.json"), JSON.stringify(userWatchInfo, null, 1));
 
         if (this.db === null) {
             console.log("db === null");

@@ -77,3 +77,15 @@ export interface User {
     usergroup: number;
 }
 
+export const appId = "bgm12835d9fe466616a5";
+
+export function login_url(redirect_uri: string) {
+    const url = new URL('https://bgm.tv/oauth/authorize');
+    const params = url.searchParams;
+
+    params.append("client_id", appId);
+    params.append("response_type", "code");
+    params.append("redirect_uri", redirect_uri);
+    params.append("state", Math.random().toString())
+    return url.toString();
+}
