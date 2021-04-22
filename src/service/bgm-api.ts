@@ -7,6 +7,7 @@ const appSecret = "f8ff78be428a0642fd0008649394d963";
 export function login_url(redirect_uri: string) {
     const url = new URL('https://bgm.tv/oauth/authorize');
     const params = url.searchParams;
+
     params.append("client_id", appId);
     params.append("response_type", "code");
     params.append("redirect_uri", redirect_uri);

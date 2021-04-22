@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -10,7 +10,7 @@ import {
   Grid, Input, Container, Icon,
   Divider, Image, Header, Button,
   SemanticShorthandItem, LabelProps,
-  Popup
+  Popup, Modal
 } from 'semantic-ui-react';
 
 import {
@@ -141,15 +141,33 @@ const loadItems = async (url: string) => {
   return data;
 }
 
-// interface Props {
-//   domain: string;
-// }
+interface SyncDialogProps {
+  open: boolean;
+  onFinish: () => void;
+}
+
+const SyncDialog = ({ open, onFinish }: SyncDialogProps) => {
+  return (
+    <Modal open={open} dimmer="blurring">
+      <Modal.Header>同步数据</Modal.Header>
+      <Modal.Content>
+
+      </Modal.Content>
+      <Modal.Actions>
+        <Button positive onClick={() => onFinish()}>
+          完成
+        </Button>
+      </Modal.Actions>
+    </Modal>
+  );
+}
 
 const Home = () => {
-  const domain = window.location.protocol + "//" + window.location.host;
+
   const [searchResult, setSearchResult] = useState<SearchResult>({ items: [] });
   const [query, setQuery] = useState<string>("");
   const [monthRange, setMonthRange] = useState<string>(defaultRange());
+  const [open, setOpen] = useState(false)
 
   const loadFn = async () => {
     let url;
@@ -202,18 +220,24 @@ const Home = () => {
               {
                 searchResult.uid ?
                   (
-                    <Button basic icon labelPosition='left' color='teal'>
+                    <Button basic icon labelPosition='left' color='teal'
+                      onClick={() => setOpen(true)}>
                       <Icon name='sync' />
                         同步
                     </Button>
                   ) : (
 
-                    <Link href={login_url(`${domain}/callback`)}>
-                      <Button basic icon labelPosition='left' color='teal'>
-                        <Icon name='user outline' />
+                    <Button basic icon labelPosition='left' color='teal' onClick={
+                      () => {
+                        if (window) {
+                          const domain = window.location.protocol + "//" + window.location.host;
+                          window.location.assign(login_url(`${domain}/callback`))
+                        }
+                      }
+                    }>
+                      <Icon name='user outline' />
                         登录
                     </Button>
-                    </Link>
                   )
               }
             </Grid.Column>
@@ -223,6 +247,7 @@ const Home = () => {
             <ItemsGroup items={searchResult.items} />
           </Grid.Row>
         </Grid >
+        <SyncDialog open={open} onFinish={() => setOpen(false)} />
       </Container>
     </>
   )
