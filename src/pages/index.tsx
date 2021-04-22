@@ -10,7 +10,7 @@ import {
   Grid, Input, Container, Icon,
   Divider, Image, Header, Button,
   SemanticShorthandItem, LabelProps,
-  Popup, Modal
+  Popup, Modal, Progress
 } from 'semantic-ui-react';
 
 import {
@@ -24,6 +24,8 @@ import 'semantic-ui-css/semantic.min.css'
 import { AccessToken } from "../common/bangumi";
 import { login_url, getUser } from "../service/bgm-api"
 import { BgmItem, WatchType, SearchResult } from '../common/watch';
+import Sync from './sync'
+import SyncDialog from '../widget/SyncDialog'
 
 
 
@@ -141,26 +143,8 @@ const loadItems = async (url: string) => {
   return data;
 }
 
-interface SyncDialogProps {
-  open: boolean;
-  onFinish: () => void;
-}
 
-const SyncDialog = ({ open, onFinish }: SyncDialogProps) => {
-  return (
-    <Modal open={open} dimmer="blurring">
-      <Modal.Header>同步数据</Modal.Header>
-      <Modal.Content>
 
-      </Modal.Content>
-      <Modal.Actions>
-        <Button positive onClick={() => onFinish()}>
-          完成
-        </Button>
-      </Modal.Actions>
-    </Modal>
-  );
-}
 
 const Home = () => {
 
