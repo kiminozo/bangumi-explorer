@@ -90,20 +90,28 @@ app.get('/images/:id', async (req, res) => {
     res.sendFile(controller.getImagePath(id));
 })
 
-app.get('/callback', async (req, res) => {
+app.get('/callback', async (req, res, nextPage) => {
     const { code, state } = req.query;
     console.log("code:" + code);
     if (!code) {
         res.status(404);
         return;
     }
-    const redirect_uri = 'http://' + req.get('host') + "/callback";
+    const baseUrl = req.protocol + '//' + req.get('host');
+    const redirect_uri = baseUrl + "/callback";
+    console.log("redirect_uri:" + redirect_uri);
     let token = await controller.callback(redirect_uri, code.toString(), state?.toString());
-    res.cookie("userId", token?.user_id);
+    if (!token) {
+        res.status(503);
+        return;
+    }
+    res.cookie("userId", token.user_id);
     res.cookie("token", token, { signed: true });
-    req.cookies.userId = token?.user_id
-    await handle(req, res);
+    req.cookies.userId = token.user_id;
+    await handle(req, res)
 });
+
+
 
 app.get('*', async (req, res) => {
     await handle(req, res)
