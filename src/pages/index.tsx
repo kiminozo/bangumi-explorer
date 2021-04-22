@@ -52,22 +52,22 @@ function quarter(date: Date): string {
   return year + "-10";
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const { origin } = absoluteUrl(req);
-  let avatar: string | null = null;
-  // console.log("token:" + req.session.token)
-  // console.log("user:" + req.session.token?.user_id ?? "");
-  // if (req.session.token && req.session.token.user_id) {
+// export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+//   const { origin } = absoluteUrl(req);
+//   let avatar: string | null = null;
+//   // console.log("token:" + req.session.token)
+//   // console.log("user:" + req.session.token?.user_id ?? "");
+//   // if (req.session.token && req.session.token.user_id) {
 
-  //   const user = await getUser(req.session.token.user_id);
-  //   avatar = user?.avatar.small ?? null;
-  // }
-  // console.log("avatar:" + avatar)
+//   //   const user = await getUser(req.session.token.user_id);
+//   //   avatar = user?.avatar.small ?? null;
+//   // }
+//   // console.log("avatar:" + avatar)
 
-  return {
-    props: { domain: origin, avatar }
-  };
-}
+//   return {
+//     props: { domain: origin, avatar }
+//   };
+// }
 
 const imageLabel = (watchType?: WatchType): SemanticShorthandItem<LabelProps> => {
   switch (watchType) {
@@ -113,12 +113,7 @@ const ItemsGroup = (props: { items: BgmItem[] }) => {
                   <Grid.Column>
                     <Image style={{ "overflow": "hidden" }} wrapped rounded src={`/images/${item.id}`} size='small'
                       label={imageLabel(item.watchType)}
-                    // label={{ as: 'a', color: 'blue', corner: 'right', icon: 'heart' }}
                     />
-                    {/* <Header as="div" size="tiny"
-                      content={item.name_cn !== "" ? item.name_cn : item.name}
-                      subheader={item.air_date}
-                    /> */}
                     <Header as='div' size="tiny">
                       <a target="_blank" href={item.url}>
                         {item.name_cn !== "" ? item.name_cn : item.name}
@@ -146,13 +141,12 @@ const loadItems = async (url: string) => {
   return data;
 }
 
-interface Props {
-  domain: string;
-}
+// interface Props {
+//   domain: string;
+// }
 
-const Home = (props: Props) => {
-
-  const { domain } = props;
+const Home = () => {
+  const domain = window.location.protocol + "//" + window.location.host;
   const [searchResult, setSearchResult] = useState<SearchResult>({ items: [] });
   const [query, setQuery] = useState<string>("");
   const [monthRange, setMonthRange] = useState<string>(defaultRange());
@@ -192,7 +186,7 @@ const Home = (props: Props) => {
                 onChange={(data) => setQuery(data.target.value)} >
               </Input>
             </Grid.Column>
-            <Grid.Column width={4}>
+            <Grid.Column width={3}>
               <MonthRangeInput
                 localization='zh-cn'
                 placeholder="From - To"
@@ -203,20 +197,22 @@ const Home = (props: Props) => {
                 iconPosition="left"
                 onChange={(_e, { value }) => { setMonthRange(value) }} />
             </Grid.Column>
-            <Grid.Column width={2} >
+            <Grid.Column width={3} >
+
               {
                 searchResult.uid ?
                   (
-                    <Popup content='快速同步' trigger={
-                      <Button icon >
-                        <Icon name='sync' />
-                      </Button>
-                    } />
+                    <Button basic icon labelPosition='left' color='teal'>
+                      <Icon name='sync' />
+                        同步
+                    </Button>
                   ) : (
+
                     <Link href={login_url(`${domain}/callback`)}>
-                      <Button>
+                      <Button basic icon labelPosition='left' color='teal'>
+                        <Icon name='user outline' />
                         登录
-                      </Button>
+                    </Button>
                     </Link>
                   )
               }
