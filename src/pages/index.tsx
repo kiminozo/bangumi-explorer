@@ -6,7 +6,7 @@ import {
   Grid, Input, Container, Icon,
   Divider, Image, Header, Button,
   SemanticShorthandItem, LabelProps,
-  Popup, Rating, Label
+  Popup, Rating, Label, Dropdown, Select
 } from 'semantic-ui-react';
 
 import {
@@ -18,7 +18,7 @@ import 'moment/locale/zh-cn';
 
 import 'semantic-ui-css/semantic.min.css'
 import { login_url } from "../common/bangumi";
-import { BgmItem, WatchType, SearchResult } from '../common/watch';
+import { BgmItem, WatchType, SearchResult, SearchFilter } from '../common/watch';
 import SyncDialog from '../widget/SyncDialog'
 
 
@@ -160,15 +160,32 @@ const loadItems = async (url: string) => {
   return data;
 }
 
+type FilterType = WatchType | "all";
 
+interface OptType {
+  key: FilterType;
+  text: string;
+  value: FilterType;
+}
 
+const options: OptType[] = [
+  { key: 'all', text: '全部', value: 'all' },
+  { key: 'do', text: '在看', value: "do" },
+  { key: 'collect', text: '看过', value: "collect" },
+  { key: 'dropped', text: '抛弃', value: "dropped" },
+  { key: 'on_hold', text: '搁置', value: "on_hold" },
+]
 
 const Home = () => {
 
-  const [searchResult, setSearchResult] = useState<SearchResult>({ items: [] });
   const [query, setQuery] = useState<string>("");
   const [monthRange, setMonthRange] = useState<string>(defaultRange());
-  const [open, setOpen] = useState(false)
+  const [filter, setFilter] = useState<string>("all");
+
+  const [searchResult, setSearchResult] = useState<SearchResult>({ items: [] });
+
+  const [open, setOpen] = useState(false);
+
 
   const loadFn = async () => {
     let url;
@@ -186,7 +203,7 @@ const Home = () => {
     setSearchResult(result)
   }
 
-  useEffect(() => { loadFn() }, [query, monthRange]);
+  useEffect(() => { loadFn() }, [query, monthRange, filter]);
 
   return (
     <>
@@ -202,14 +219,22 @@ const Home = () => {
           <Grid.Row centered>
             <Grid.Column width={10} >
               <Input fluid icon='search' placeholder='搜索...'
-                onChange={(data) => setQuery(data.target.value)} >
+                onChange={(e) => setQuery(e.target.value)} >
+                <input />
+                <Dropdown selection compact options={options} defaultValue='all'
+                  onChange={(e, { name, value }) => {
+                    if (typeof (value) === 'string') {
+                      setFilter(value);
+                    }
+                  }}
+                />
               </Input>
             </Grid.Column>
             <Grid.Column width={3}>
               <MonthRangeInput
                 localization='zh-cn'
                 placeholder="From - To"
-                value={monthRange}
+                value={monthRange ?? ""}
                 closable
                 clearable
                 dateFormat='YYYY-MM'
