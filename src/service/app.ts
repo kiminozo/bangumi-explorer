@@ -9,7 +9,7 @@ import Controller from "./controller";
 
 const dev = process.env.NODE_ENV !== 'production'
 const secret = process.env.COOKIE_SECRET ?? "MZhjsZgzleZWiwYhPKwCsj5afQHiBFKd";
-
+const enableHttps = process.env.ENABLE_HTTPS === "true";
 
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler();
@@ -97,7 +97,7 @@ app.get('/callback', async (req, res) => {
         res.status(404);
         return;
     }
-    const baseUrl = (dev ? 'http://' : 'https://') + req.get('host');
+    const baseUrl = (enableHttps ? 'http://' : 'https://') + req.get('host');
     const redirect_uri = baseUrl + "/callback";
     console.log("redirect_uri:" + redirect_uri);
     let token = await controller.callback(redirect_uri, code.toString(), state?.toString());
@@ -107,7 +107,6 @@ app.get('/callback', async (req, res) => {
     }
     res.cookie("userId", token.user_id);
     res.cookie("token", token, { signed: true });
-    req.cookies.userId = token.user_id;
     await handle(req, res)
 });
 

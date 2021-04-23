@@ -41,23 +41,6 @@ function quarter(date: Date): string {
   return year + "-10";
 }
 
-// export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-//   const { origin } = absoluteUrl(req);
-//   let avatar: string | null = null;
-//   // console.log("token:" + req.session.token)
-//   // console.log("user:" + req.session.token?.user_id ?? "");
-//   // if (req.session.token && req.session.token.user_id) {
-
-//   //   const user = await getUser(req.session.token.user_id);
-//   //   avatar = user?.avatar.small ?? null;
-//   // }
-//   // console.log("avatar:" + avatar)
-
-//   return {
-//     props: { domain: origin, avatar }
-//   };
-// }
-
 const imageLabel = (watchType?: WatchType): SemanticShorthandItem<LabelProps> => {
   switch (watchType) {
     case 'collect':

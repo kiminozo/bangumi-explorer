@@ -36,5 +36,9 @@ COPY --chown=node:node --from=prod /app/package.json ./package.json
 USER node
 VOLUME [ "/app/database" ]
 EXPOSE 3000
+
 ENV NODE_ENV=production
+ENV COOKIE_SECRET="ZuDZivLcRTLP9z"
+ENV ENABLE_HTTPS=true
+
 CMD ["node", "build/service/app.js"]
