@@ -39,10 +39,10 @@ export default class Controller {
         }
         const watchInfo = db.get(user, item.id);
         if (!watchInfo) {
-            return filter ? null : item;
+            return filter != undefined && filter !== "undo" ? null : item;
         }
 
-        if (filter && watchInfo.type != filter) {
+        if (filter && (filter === "undo" || watchInfo.type != filter)) {
             return null;
         }
         return Object.assign<UserItem, StoreItem>({ watchType: watchInfo.type }, item);

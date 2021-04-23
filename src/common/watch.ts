@@ -28,12 +28,11 @@ export type StoreItem = Item & StoreInfo;
 
 export type BgmItem = UserItem & StoreItem;
 
-export interface SearchFilter {
-    monthRange?: string;
-    filter?: WatchType
-}
+
 
 export interface SearchResult {
     uid?: number
     items: BgmItem[]
 }
+
+export type FilterType = WatchType | "undo" | "all";

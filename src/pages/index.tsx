@@ -18,7 +18,7 @@ import 'moment/locale/zh-cn';
 
 import 'semantic-ui-css/semantic.min.css'
 import { login_url } from "../common/bangumi";
-import { BgmItem, WatchType, SearchResult, SearchFilter } from '../common/watch';
+import { BgmItem, WatchType, SearchResult, FilterType } from '../common/watch';
 import SyncDialog from '../widget/SyncDialog'
 
 
@@ -173,7 +173,6 @@ const loadItems = async (url: string) => {
   return data;
 }
 
-type FilterType = WatchType | "all";
 
 interface OptType {
   key: FilterType;
@@ -183,6 +182,7 @@ interface OptType {
 
 const options: OptType[] = [
   { key: 'all', text: '全部', value: 'all' },
+  { key: 'undo', text: '未看', value: "undo" },
   { key: 'do', text: '在看', value: "do" },
   { key: 'collect', text: '看过', value: "collect" },
   { key: 'dropped', text: '抛弃', value: "dropped" },
