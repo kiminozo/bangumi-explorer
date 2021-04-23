@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import _ from "lodash";
-
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
   Grid, Input, Container, Icon,
   Divider, Image, Header, Button,
   SemanticShorthandItem, LabelProps,
+  Popup, Rating, Label
 } from 'semantic-ui-react';
 
 import {
@@ -64,6 +65,64 @@ const defaultRange = (): string => {
   return `${st} - ${et}`;
 }
 
+// const summaryStyle = {
+//   width: "300px",
+//   margin: "30px auto",
+//   backgroundColor: "#44014C",  //驼峰法
+//   minHeight: "200px",
+//   boxSizing: "border-box",
+// };
+
+const ItemInfo = ({ item }: { item: BgmItem }) => {
+  const [copied, setCopied] = useState(false)
+  return (
+    <>
+      <p>
+        <Rating icon='star' disabled defaultRating={item.rating.score} maxRating={10} />
+      </p>
+      <p>
+        {
+          item.path ? (
+            <CopyToClipboard text={item.path} onCopy={() => setCopied(true)}>
+              <Label as="a" color={copied ? "teal" : undefined} >
+                <Icon name='linkify' /> {item.path}
+              </Label>
+            </CopyToClipboard>
+          ) : undefined
+        }
+      </p>
+      <p>{item.summary}</p>
+    </>
+  );
+}
+
+const ItemCard = ({ item }: { item: BgmItem }) => (
+
+  <>
+    <Popup flowing hoverable style={{ "width": "400px" }} trigger={
+      <Image style={{ "overflow": "hidden" }} wrapped rounded src={`/images/${item.id}`} size='small'
+        label={imageLabel(item.watchType)}
+      />
+    }>
+      <Popup.Header>{item.name}</Popup.Header>
+      <Popup.Content>
+        <ItemInfo item={item} />
+      </Popup.Content>
+    </Popup>
+    <Header as='div' size="tiny">
+      <a target="_blank" href={item.url}>
+        {item.name_cn !== "" ? item.name_cn : item.name}
+      </a>
+      <Header.Subheader>
+        {item.air_date}
+      </Header.Subheader>
+    </Header>
+    <br />
+    {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
+  </>
+
+)
+
 const ItemsGroup = (props: { items: BgmItem[] }) => {
   const { items } = props;
   return (<Grid relaxed columns={6}>
@@ -83,19 +142,7 @@ const ItemsGroup = (props: { items: BgmItem[] }) => {
               {
                 value.map(item => (
                   <Grid.Column>
-                    <Image style={{ "overflow": "hidden" }} wrapped rounded src={`/images/${item.id}`} size='small'
-                      label={imageLabel(item.watchType)}
-                    />
-                    <Header as='div' size="tiny">
-                      <a target="_blank" href={item.url}>
-                        {item.name_cn !== "" ? item.name_cn : item.name}
-                      </a>
-                      <Header.Subheader>
-                        {item.air_date}
-                      </Header.Subheader>
-                    </Header>
-                    <br />
-                    {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
+                    <ItemCard item={item} />
                   </Grid.Column>
                 ))
               }
