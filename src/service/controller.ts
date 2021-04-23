@@ -33,13 +33,17 @@ export default class Controller {
     constructor() {
     }
 
-    private watchState(item: StoreItem, user?: number | string): BgmItem {
+    private watchState(item: StoreItem, user?: number, filter?: string): BgmItem | null {
         if (!item || !user) {
             return item;
         }
         const watchInfo = db.get(user, item.id);
         if (!watchInfo) {
-            return item;
+            return filter ? null : item;
+        }
+
+        if (filter && watchInfo.type != filter) {
+            return null;
         }
         return Object.assign<UserItem, StoreItem>({ watchType: watchInfo.type }, item);
     }
@@ -53,11 +57,13 @@ export default class Controller {
         return await accessToken(redirect_uri, code, state);
     }
 
-    async load(range?: string, uid?: number): Promise<SearchResult> {
+    async load(uid?: number, range?: string, filter?: string): Promise<SearchResult> {
         return {
             uid,
             items: index.where(item => inRange(item.air_date, range))
-                .map(item => this.watchState(item, uid))
+                .map(item => this.watchState(item, uid, filter))
+                .filter(item => item !== null)
+                .map(item => <BgmItem>item)
         }
     }
 
@@ -70,6 +76,8 @@ export default class Controller {
         return {
             uid,
             items: res.map(item => this.watchState(item, uid))
+                .filter(item => item !== null)
+                .map(item => <BgmItem>item)
         }
     }
 

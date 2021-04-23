@@ -64,22 +64,20 @@ export default class BangumiDB {
         // this.db.set('info', infoList).write();
     }
 
-    get(user: string | number, id: number): WatchInfo | null {
+    get(user: number, id: number): WatchInfo | null {
         if (this.db === null) {
             return null;
         }
-        let query = typeof user === 'string' ? { name: user } : { id: user }
-        const item = this.db.get("users").find(query)
+        const item = this.db.get("users").find({ id: user })
             .get('watches').find({ id }).value();
         return item;
     }
 
-    getAll(user: string | number): WatchInfo[] {
+    getAll(user: number): WatchInfo[] {
         if (this.db === null) {
             return [];
         }
-        let query = typeof user === 'string' ? { name: user } : { id: user }
-        const items = this.db.get("users").find(query)
+        const items = this.db.get("users").find({ id: user })
             .get('watches').value();
         return items;
     }

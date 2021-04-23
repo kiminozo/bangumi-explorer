@@ -96,15 +96,27 @@ const ItemInfo = ({ item }: { item: BgmItem }) => {
   );
 }
 
-const ItemCard = ({ item }: { item: BgmItem }) => (
-
-  <>
+const ItemCard = ({ item }: { item: BgmItem }) => {
+  return (<>
     <Popup flowing hoverable style={{ "width": "400px" }} trigger={
       <Image style={{ "overflow": "hidden" }} wrapped rounded src={`/images/${item.id}`} size='small'
         label={imageLabel(item.watchType)}
       />
     }>
-      <Popup.Header>{item.name}</Popup.Header>
+      <Popup.Header>
+        <Header as='div' size="tiny">
+          <a target="_blank" href={item.url}>
+            {item.name_cn !== "" ? item.name_cn : item.name}
+          </a>
+          <Header.Subheader>
+            {item.name !== "" ? item.name : item.name_cn}
+            <br />
+            {item.air_date}
+          </Header.Subheader>
+          <Header.Subheader>
+          </Header.Subheader>
+        </Header>
+      </Popup.Header>
       <Popup.Content>
         <ItemInfo item={item} />
       </Popup.Content>
@@ -121,7 +133,8 @@ const ItemCard = ({ item }: { item: BgmItem }) => (
     {/* <Rating icon='star' defaultRating={Math.floor((item.rating.score + 0.5) / 2)} maxRating={5} /> */}
   </>
 
-)
+  )
+}
 
 const ItemsGroup = (props: { items: BgmItem[] }) => {
   const { items } = props;
@@ -188,16 +201,18 @@ const Home = () => {
 
 
   const loadFn = async () => {
-    let url;
+    let url: string;
     if (query) {
       url = "/anime/" + query;
-    } else if (monthRange) {
-      if (monthRange.split(" - ").length < 2) {
-        return;
-      }
-      url = "/anime/r=" + monthRange;
     } else {
-      url = "/anime/"
+      url = "/anime";
+      const f = filter && filter !== 'all';
+      if (f) {
+        url += "?f=" + filter;
+      }
+      if (monthRange && monthRange.split(" - ").length === 2) {
+        url += (f ? "&" : "?") + "r=" + monthRange;
+      }
     }
     const result = await loadItems(url);
     setSearchResult(result)
