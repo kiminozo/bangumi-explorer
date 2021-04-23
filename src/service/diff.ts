@@ -27,7 +27,7 @@ async function diff() {
     await importData();
     await db.prepare();
 
-    const items = db.getAll("kiminozo");
+    const items = db.getAll(10747);
     // const recent = new Date();
     // recent.setMonth(recent.getMonth() - 24);
 
