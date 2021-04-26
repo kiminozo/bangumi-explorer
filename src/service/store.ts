@@ -9,7 +9,13 @@ import { StoreItem } from "../common/watch";
 const dataFileName = "data.json";
 const dev = process.env.NODE_ENV !== 'production'
 const dbPath = dev ? "output" : "database";
+const scanPath = dev ? ".data" : "/anime";
+
 const dbFile = Path.join(dbPath, "index.db");
+const imagesDir = Path.join(dbPath, "images");
+
+const percentOf = (current: number, sum: number) => Math.ceil(current * 100 / sum);
+
 
 const segment = new Segment();
 segment.useDefault();
@@ -31,24 +37,26 @@ const index = FlexSearch.create<StoreItem>({
 
 
 export function imagePath(id: string | number): string {
-    return Path.resolve(dbPath, "images", id + ".jpg")
+    return Path.resolve(imagesDir, id + ".jpg")
 }
 
-async function scan(path: string, deep: number): Promise<string[]> {
-    let stack = await fs.promises.readdir(path);
-    stack = stack.map(p => Path.join(path, p))
-        .filter(p => fs.lstatSync(p).isDirectory());
-    for (let i = 0; i < deep; i++) {
-        let dirs = [...stack];
-        stack.splice(0, stack.length);
-        for (const child of dirs) {
-            let tmp = await fs.promises.readdir(child);
-            tmp.map(p => Path.join(child, p))
-                .filter(p => fs.lstatSync(p).isDirectory())
-                .forEach(p => stack.push(p));
-        }
+
+async function match(root: string): Promise<string[]> {
+    const result: string[] = [];
+    const stack: string[] = [];
+    stack.push(root);
+
+    while (stack.length > 0) {
+        let child = stack.shift() as string;
+        let files = await fs.promises.readdir(child);
+        files.filter(p => dataFileName === p)
+            .forEach(p => result.push(child));
+
+        files.map(p => Path.join(child, p))
+            .filter(p => fs.lstatSync(p).isDirectory())
+            .forEach(p => stack.push(p));
     }
-    return stack;
+    return result;
 }
 
 async function readData(path: string): Promise<StoreItem | null> {
@@ -68,81 +76,69 @@ async function readData(path: string): Promise<StoreItem | null> {
 
 
 
+interface Progress {
+    (progress: number, path: string): void
+}
 
+async function findAll(path: string, progress?: Progress) {
+    const dirs = await match(path);
+    const length = dirs.length;
+    console.debug(dirs);
+    for (let i = 0; i < length; i++) {
+        const dir = dirs[i];
+        const item = await readData(dir);
+        if (progress) {
+            progress(percentOf(i, length), dir);
+        }
+        if (item) {
+            if (index.where(p => p.id === item.id).length > 0) {
+                index.update(item.id, item);
+                console.debug("update:" + item.name);
+            } else {
+                index.add(item);
+                console.debug("add:" + item.name);
+            }
+        }
 
-async function read(path: string, deep: number) {
-    const dirs = await scan(path, deep);
-    // console.log(dirs);
-    const resList = await Promise.all(dirs.map(dir => readData(dir)))
-    const res = resList.filter(p => p != null).map(p => p!);
-    res.forEach(item => {
-        index.add(item);
-        // console.log(decodeURI(item.name_cn))
-    });
-    // console.log(index.search("GRANBELM"));
+    }
+
 }
 
 
-async function writeFile() {
-    //await read(Path.join('/Volumes/anime', '新番'), 1);
-    await read(Path.join('.data', '新番'), 1);
+export async function scanFiles(progress?: Progress) {
+    await findAll(scanPath, progress);
     const data = index.export();
     await fs.promises.writeFile(dbFile, data, 'utf-8');
+    if (progress) {
+        progress(100, "保存索引文件");
+    }
 }
 
-async function test() {
-    const data = await fs.promises.readFile(dbFile, 'utf-8')
-    index.import(data);
+// async function test() {
+//     const data = await fs.promises.readFile(dbFile, 'utf-8')
+//     index.import(data);
 
-    const res = await index.search("在", {
-        field: ["name_cn"],
-    });
-    console.log(res.map(p => p.name_cn));
+//     const res = await index.search("在", {
+//         field: ["name_cn"],
+//     });
+//     console.log(res.map(p => p.name_cn));
 
-}
+// }
 
 export function indexStore(): Index<StoreItem> {
     return index;
 }
 
 export async function importData() {
-    const data = await fs.promises.readFile(dbFile, 'utf-8')
-    index.import(data);
+    try {
+        const data = await fs.promises.readFile(dbFile, 'utf-8')
+        index.import(data);
+    } catch (error) {
+
+    }
+    try {
+        await fs.promises.mkdir(imagesDir, { recursive: true })
+    } catch (error) {
+
+    }
 }
-
-// export class IndexStore {
-//     init = false;
-
-//     constructor() {
-
-//     }
-
-//     async Init() {
-//         if (!this.init) {
-//             this.init = true;
-//             const data = await fs.promises.readFile(dbFile, 'utf-8')
-//             index.import(data);
-//         }
-//     }
-
-//     async Search(key: string): Promise<StoreItem[]> {
-//         const res = await index.search(key, {
-//             field: ["name_cn", "name"],
-//             bool: 'or',
-//             limit: 12
-//         });
-//         return res;
-//     }
-
-//     async Load(range?: string): Promise<StoreItem[]> {
-//         return index.where(item => inRange(item.air_date, range));
-//     }
-
-//     getImagePath(id: string): string {
-//         return Path.resolve(imagePath(id))
-//     }
-// }
-
-//writeFile();
-
-//test();

@@ -1,5 +1,5 @@
 import { AccessToken } from "../common/bangumi";
-import { imagePath, importData, indexStore } from "./store";
+import { imagePath, importData, indexStore, scanFiles } from "./store";
 import Path from "path";
 import BangumiDB from "./bgmdb";
 import { BgmItem, SearchResult, StoreItem, UserItem } from "../common/watch";
@@ -103,5 +103,17 @@ export default class Controller {
                 complete: true
             });
         }
+    }
+
+    async scan(socket: Socket) {
+        const log = (percent: number, path: string) => {
+            socket.emit('message', {
+                type: "log",
+                percent: percent,
+                message: path,
+                complete: percent === 100
+            });
+        }
+        await scanFiles(log);
     }
 }

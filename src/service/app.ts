@@ -50,6 +50,17 @@ io.of("sync").on('connection', socket => {
     });
 })
 
+io.of("scan").on('connection', socket => {
+    console.log('A user connected');
+    socket.on('task:scan', () => {
+        console.log('task:scan');
+        controller.scan(socket);
+    });
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+    });
+})
+
 io.attach(server);
 
 
