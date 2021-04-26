@@ -43,13 +43,17 @@ async function match(root: string): Promise<string[]> {
 
     while (stack.length > 0) {
         let child = stack.shift() as string;
-        let files = await fs.promises.readdir(child);
-        files.filter(p => dataFileName === p)
-            .forEach(p => result.push(child));
+        try {
+            let files = await fs.promises.readdir(child);
+            files.filter(p => dataFileName === p)
+                .forEach(_ => result.push(child));
 
-        files.map(p => Path.join(child, p))
-            .filter(p => fs.lstatSync(p).isDirectory())
-            .forEach(p => stack.push(p));
+            files.map(p => Path.join(child, p))
+                .filter(p => fs.lstatSync(p).isDirectory())
+                .forEach(p => stack.push(p));
+        } catch (e) {
+            console.error(e);
+        }
     }
     return result;
 }
