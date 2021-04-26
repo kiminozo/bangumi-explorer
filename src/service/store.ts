@@ -9,7 +9,7 @@ import { StoreItem } from "../common/watch";
 const dataFileName = "data.json";
 const dev = process.env.NODE_ENV !== 'production'
 const dbPath = dev ? "output" : "database";
-const scanPath = dev ? ".data" : "/anime";
+const scanPath = dev ? ".data" : "anime";
 
 const dbFile = Path.join(dbPath, "index.db");
 const imagesDir = Path.join(dbPath, "images");
