@@ -6,10 +6,9 @@ import cookie from "cookie";
 import cookieParser from 'cookie-parser';
 
 import Controller from "./controller";
+import { secret, dev, enableHttps } from "../common/defines";
 
-const dev = process.env.NODE_ENV !== 'production'
-const secret = process.env.COOKIE_SECRET ?? "MZhjsZgzleZWiwYhPKwCsj5afQHiBFKd";
-const enableHttps = process.env.ENABLE_HTTPS === "true";
+
 
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler();
@@ -44,6 +43,17 @@ io.of("sync").on('connection', socket => {
     });
     socket.on('task:cancel', () => {
         console.log('task:cancel');
+    });
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+    });
+})
+
+io.of("scan").on('connection', socket => {
+    console.log('A user connected');
+    socket.on('task:scan', () => {
+        console.log('task:scan');
+        controller.scan(socket);
     });
     socket.on('disconnect', () => {
         console.log('A user disconnected');

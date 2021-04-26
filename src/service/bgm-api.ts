@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { AccessToken, User, appId } from '../common/bangumi';
+import { AccessToken, User } from '../common/bangumi';
+import { appId, appSecret } from '../common/defines';
 
-const appSecret = "f8ff78be428a0642fd0008649394d963";
 
 const baseUrl = "https://api.bgm.tv/";
 

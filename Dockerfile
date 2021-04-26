@@ -34,7 +34,9 @@ COPY --chown=node:node --from=prod /app/node_modules ./node_modules
 COPY --chown=node:node --from=prod /app/package.json ./package.json
 #RUN chown -R node:node /app/database
 USER node
-VOLUME [ "/app/database" ]
+VOLUME [ "/database" ]
+VOLUME [ "/anime" ]
+
 EXPOSE 3000
 
 ENV NODE_ENV=production

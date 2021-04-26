@@ -20,6 +20,7 @@ import 'semantic-ui-css/semantic.min.css'
 import { login_url } from "../common/bangumi";
 import { BgmItem, WatchType, SearchResult, FilterType } from '../common/watch';
 import SyncDialog from '../widget/SyncDialog'
+import ScanDialog from '../widget/ScanDialog';
 
 
 
@@ -197,7 +198,8 @@ const Home = () => {
 
   const [searchResult, setSearchResult] = useState<SearchResult>({ items: [] });
 
-  const [open, setOpen] = useState(false);
+  const [openSync, setSyncOpen] = useState(false);
+  const [openScan, setScanOpen] = useState(false);
 
 
   const loadFn = async () => {
@@ -233,7 +235,7 @@ const Home = () => {
           </Grid.Row>
           <Grid.Row centered>
             <Grid.Column width={10} >
-              <Input fluid icon='search' placeholder='搜索...'
+              <Input fluid placeholder='搜索...'
                 onChange={(e) => setQuery(e.target.value)} >
                 <input />
                 <Dropdown selection compact options={options} defaultValue='all'
@@ -257,30 +259,34 @@ const Home = () => {
                 onChange={(_e, { value }) => { setMonthRange(value) }} />
             </Grid.Column>
             <Grid.Column width={3} >
+              <Button.Group basic icon color='teal'>
+                <Button
+                  onClick={() => setScanOpen(true)}>
+                  <Icon name='server' />
+                </Button>
+                {
+                  searchResult.uid ?
+                    (
+                      <Button
+                        onClick={() => setSyncOpen(true)}>
+                        <Icon name='sync' />
+                      </Button>
+                    ) : (
 
-              {
-                searchResult.uid ?
-                  (
-                    <Button basic icon labelPosition='left' color='teal'
-                      onClick={() => setOpen(true)}>
-                      <Icon name='sync' />
-                        同步
-                    </Button>
-                  ) : (
-
-                    <Button basic icon labelPosition='left' color='teal' onClick={
-                      () => {
-                        if (window) {
-                          const domain = window.location.protocol + "//" + window.location.host;
-                          window.location.assign(login_url(`${domain}/callback`))
+                      <Button labelPosition='left' onClick={
+                        () => {
+                          if (window) {
+                            const domain = window.location.protocol + "//" + window.location.host;
+                            window.location.assign(login_url(`${domain}/callback`))
+                          }
                         }
-                      }
-                    }>
-                      <Icon name='user outline' />
+                      }>
+                        <Icon name='user outline' />
                         登录
-                    </Button>
-                  )
-              }
+                      </Button>
+                    )
+                }
+              </Button.Group>
             </Grid.Column>
           </Grid.Row>
 
@@ -288,7 +294,17 @@ const Home = () => {
             <ItemsGroup items={searchResult.items} />
           </Grid.Row>
         </Grid >
-        <SyncDialog open={open} onFinish={() => setOpen(false)} />
+        {
+          openSync
+            ? (<SyncDialog open={true} onFinish={() => setSyncOpen(false)} />)
+            : undefined
+        }
+        {
+          openScan
+            ? (<ScanDialog open={true} onFinish={() => setScanOpen(false)} />)
+            : undefined
+        }
+
       </Container>
     </>
   )
