@@ -6,10 +6,9 @@ import cookie from "cookie";
 import cookieParser from 'cookie-parser';
 
 import Controller from "./controller";
+import { secret, dev, enableHttps } from "../common/defines";
 
-const dev = process.env.NODE_ENV !== 'production'
-const secret = process.env.COOKIE_SECRET ?? "MZhjsZgzleZWiwYhPKwCsj5afQHiBFKd";
-const enableHttps = process.env.ENABLE_HTTPS === "true";
+
 
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler();

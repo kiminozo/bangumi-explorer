@@ -5,14 +5,9 @@ import FlexSearch, { Index } from "flexsearch";
 //import jieba from 'nodejieba';
 import { Segment } from 'segment';
 import { StoreItem } from "../common/watch";
+import { dataFileName, dbFile, imagesDir, posterFileName, scanPath } from "../common/defines";
 
-const dataFileName = "data.json";
-const dev = process.env.NODE_ENV !== 'production'
-const dbPath = dev ? "output" : "database";
-const scanPath = dev ? ".data" : "anime";
 
-const dbFile = Path.join(dbPath, "index.db");
-const imagesDir = Path.join(dbPath, "images");
 
 const percentOf = (current: number, sum: number) => Math.ceil(current * 100 / sum);
 
@@ -65,7 +60,7 @@ async function readData(path: string): Promise<StoreItem | null> {
         const item: StoreItem = JSON.parse(data);
         item.path = path;
 
-        await fs.promises.copyFile(Path.join(path, 'Poster.jpg'), imagePath(item.id))
+        await fs.promises.copyFile(Path.join(path, posterFileName), imagePath(item.id))
         return item;
     } catch (error) {
         console.error(error);
@@ -83,7 +78,7 @@ interface Progress {
 async function findAll(path: string, progress?: Progress) {
     const dirs = await match(path);
     const length = dirs.length;
-    console.debug(dirs);
+    //  console.debug(dirs);
     for (let i = 0; i < length; i++) {
         const dir = dirs[i];
         const item = await readData(dir);

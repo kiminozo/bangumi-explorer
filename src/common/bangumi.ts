@@ -1,3 +1,4 @@
+import { appId } from "./defines";
 
 export interface Images {
     large: string;
@@ -77,7 +78,6 @@ export interface User {
     usergroup: number;
 }
 
-export const appId = "bgm12835d9fe466616a5";
 
 export function login_url(redirect_uri: string) {
     const url = new URL('https://bgm.tv/oauth/authorize');

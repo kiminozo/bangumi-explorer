@@ -2,11 +2,10 @@ import Path from "path";
 import low from 'lowdb';
 import FileAsync from 'lowdb/adapters/FileAsync'
 import { WatchInfo, UserWatchInfo } from '../common/watch';
-import * as fs from "fs"
+import { watchFile } from "../common/defines";
 
 
-const dev = process.env.NODE_ENV !== 'production'
-const dbPath = dev ? "output" : "database";
+
 
 
 
@@ -21,7 +20,7 @@ export default class BangumiDB {
     }
 
     async prepare() {
-        const adapter = new FileAsync<WatchDB>(Path.join(dbPath, `watch.db`))
+        const adapter = new FileAsync<WatchDB>(watchFile)
         this.db = await low(adapter);
         this.db.defaults({ users: [] }).write();
     }

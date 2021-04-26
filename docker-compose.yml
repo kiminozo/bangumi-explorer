@@ -11,4 +11,8 @@ services:
     volumes:
       - type: bind
         source: ./output
-        target: /app/database
+        target: /database
+      - type: bind
+        source: ./.data
+        target: /anime
+        read_only: true
